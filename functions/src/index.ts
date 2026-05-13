@@ -5,7 +5,11 @@ admin.initializeApp()
 
 const db = admin.firestore()
 
-export const dispatchScheduledMessages = onSchedule('every 1 minutes', async () => {
+export const dispatchScheduledMessages = onSchedule({
+    schedule: 'every 1 minutes',
+    timeZone: 'America/Sao_Paulo',
+    timeoutSeconds: 60,
+}, async () => {
     const now = admin.firestore.Timestamp.now()
 
     const snapshot = await db
