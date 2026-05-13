@@ -1,8 +1,9 @@
-import { Alert, Button, Checkbox, CircularProgress, FormControlLabel, IconButton, InputAdornment, TextField } from "@mui/material"
+import { Alert, Button, Checkbox, CircularProgress, FormControlLabel, IconButton, InputAdornment, Link as MuiLink, Stack, TextField, Typography } from "@mui/material"
 import React, { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { Link as RouterLink, useNavigate } from "react-router-dom"
 import { useAuth } from "../contexts/AuthContext"
 import { VisibilityOff, Visibility, EmailOutlined, LockOutlined, EnhancedEncryptionOutlined } from "@mui/icons-material"
+import { AuthLayout } from "../components/AuthLayout"
 
 export const RegisterPage = () => {
     const { register } = useAuth()
@@ -49,125 +50,115 @@ export const RegisterPage = () => {
     }
 
     return (
-        <div className="min-h-screen flex flex-col">
-            <header className="flex justify-start w-full border-b border-gray-200 p-2">
-                <h1 className="text-2xl font-bold text-primary">Broadcast</h1>
-            </header>
+        <AuthLayout>
+            <Stack spacing={0.5}>
+                <Typography variant="h6" sx={{ fontWeight: 600 }} color="text.primary">Crie sua conta</Typography>
+                <Typography variant="body2" color="text.secondary">Informe seus dados para fazer parte da melhor plataforma de broadcast do Brasil!</Typography>
+            </Stack>
 
-            <section className="flex flex-1 items-center justify-center bg-gray-50">
-                <div className="bg-white border border-gray-200 rounded-xl p-8 w-full max-w-md flex flex-col gap-6 shadow-sm">
-                    <div className="flex flex-col gap-1">
-                        <h2 className="text-xl font-semibold text-neutral">Crie sua conta</h2>
-                        <p className="text-sm text-secondary">Informe seus dados para fazer parte da melhor plataforma de broadcast do Brasil!</p>
-                    </div>
+            {error && <Alert severity="error">{error}</Alert>}
 
-                    {error && <Alert severity="error">{error}</Alert>}
+            <Stack component="form" onSubmit={handleSubmit} spacing={2}>
+                <TextField
+                    label="E-mail"
+                    type="email"
+                    variant="outlined"
+                    fullWidth
+                    placeholder="email@mail.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    slotProps={{
+                        input: {
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <EmailOutlined fontSize="small" />
+                                </InputAdornment>
+                            )
+                        }
+                    }}
+                />
+                <TextField
+                    label="Senha"
+                    variant="outlined"
+                    fullWidth
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    slotProps={{
+                        input: {
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <LockOutlined fontSize="small" />
+                                </InputAdornment>
+                            ),
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton onClick={() => setShowPassword((prev) => !prev)} edge="end">
+                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            )
+                        }
+                    }}
+                />
+                <TextField
+                    label="Confirme a Senha"
+                    variant="outlined"
+                    fullWidth
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    placeholder="••••••••"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                    slotProps={{
+                        input: {
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <EnhancedEncryptionOutlined fontSize="small" />
+                                </InputAdornment>
+                            ),
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton onClick={() => setShowConfirmPassword((prev) => !prev)} edge="end">
+                                        {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            )
+                        }
+                    }}
+                />
+                <Button
+                    type="submit"
+                    variant="contained"
+                    fullWidth
+                    disabled={loading}
+                    size="large"
+                >
+                    {loading ? <CircularProgress size={22} color="inherit" /> : 'Criar Conta'}
+                </Button>
+            </Stack>
 
-                    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                        <TextField
-                            label="E-mail"
-                            type="email"
-                            variant="outlined"
-                            fullWidth
-                            placeholder="email@mail.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                            slotProps={
-                                {
-                                    input: {
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <EmailOutlined fontSize="small" />
-                                            </InputAdornment>
-                                        )
-                                    }
-                                }
-                            }
-                        />
-                        <TextField
-                            label="Senha"
-                            variant="outlined"
-                            fullWidth
-                            type={showPassword ? 'text' : 'password'}
-                            placeholder="••••••••"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            slotProps={{
-                                input: {
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <LockOutlined fontSize="small" />
-                                        </InputAdornment>
-                                    ),
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton onClick={() => setShowPassword((prev) => !prev)} edge="end">
-                                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    )
-                                }
-                            }}
-                        />
-                        <TextField
-                            label="Confirme a Senha"
-                            variant="outlined"
-                            fullWidth
-                            type={showConfirmPassword ? 'text' : 'password'}
-                            placeholder="••••••••"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            required
-                            slotProps={{
-                                input: {
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <EnhancedEncryptionOutlined fontSize="small" />
-                                        </InputAdornment>
-                                    ),
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton onClick={() => setShowConfirmPassword((prev) => !prev)} edge="end">
-                                                {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    )
-                                }
-                            }}
-                        />
-                        <Button
-                            type="submit"
-                            variant="contained"
-                            fullWidth
-                            disabled={loading}
-                            size="large"
-                        >
-                            {loading ? <CircularProgress size={22} color="inherit" /> : 'Criar Conta'}
-                        </Button>
-                    </form>
-                    <FormControlLabel
-                        control={<Checkbox size="small" />}
-                        value={acceptedTerms}
-                        onChange={(e) => setAcceptedTerms((prev) => !prev)}
-                        label={<span className="text-sm text-secondary">Ao se cadastrar, você aceita nossos <Link to="/terms" className="text-primary font-medium hover:underline">termos de uso</Link> e <Link to="/privacy" className="text-primary font-medium hover:underline">política de privacidade</Link>.</span>}
-                    />
+            <FormControlLabel
+                control={<Checkbox size="small" />}
+                value={acceptedTerms}
+                onChange={(e) => setAcceptedTerms((prev) => !prev)}
+                label={
+                    <Typography variant="body2" color="text.secondary" component="span">
+                        Ao se cadastrar, você aceita nossos{' '}
+                        <MuiLink component={RouterLink} to="/terms" sx={{ fontWeight: 500 }}>termos de uso</MuiLink>
+                        {' '}e{' '}
+                        <MuiLink component={RouterLink} to="/privacy" sx={{ fontWeight: 500 }}>política de privacidade</MuiLink>.
+                    </Typography>
+                }
+            />
 
-                    <p className="text-sm text-center text-secondary">
-                        Já tem uma conta?{' '}
-                        <Link to="/login" className="text-primary font-medium hover:underline">
-                            Fazer login
-                        </Link>
-                    </p>
-                </div>
-
-                <div className="absolute bottom-6 flex gap-6 text-xs text-secondary">
-                    <span className="cursor-pointer hover:underline">Política de privacidade</span>
-                    <span className="cursor-pointer hover:underline">Termos de uso</span>
-                    <span className="cursor-pointer hover:underline">FAQ</span>
-                </div>
-            </section>
-        </div>
+            <Typography variant="body2" align="center" color="text.secondary">
+                Já tem uma conta?{' '}
+                <MuiLink component={RouterLink} to="/login" sx={{ fontWeight: 500 }}>Fazer login</MuiLink>
+            </Typography>
+        </AuthLayout>
     )
 }
