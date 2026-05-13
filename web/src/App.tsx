@@ -4,6 +4,7 @@ import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { AppLayout } from './components/AppLayout'
 import { ConnectionsPage } from './pages/ConnectionsPage'
+import { ContactsPage } from './pages/ContactsPage'
 
 function App() {
   return (
@@ -18,7 +19,7 @@ function App() {
       }>
         <Route path='/' element={<ConnectionsPage />} />
         <Route path='/connections' element={<ConnectionsPage />} />
-        <Route path='/connections/:connectionId/contacts' element={<div>Connection Contacts</div>} />
+        <Route path='/connections/:connectionId/contacts' element={<ContactsPage />} />
         <Route path='/connections/:connectionId/messages' element={<div>Connection Messages</div>} />
 
       </Route>

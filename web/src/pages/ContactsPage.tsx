@@ -1,4 +1,4 @@
-import { Add, DeleteOutlined, EditOutlined, HubOutlined } from '@mui/icons-material'
+import { Add, ContactsOutlined, DeleteOutlined, EditOutlined, Person } from '@mui/icons-material'
 import {
     Box,
     Button,
@@ -14,53 +14,46 @@ import {
     Typography,
 } from '@mui/material'
 import { useAuth } from '../contexts/AuthContext'
-import { useConnections } from '../hooks/useConnections'
 import { useState } from 'react'
-import { ConnectionDialog } from '../components/connections/ConnectionDialog'
-import type { Connection } from '../types'
-import { deleteConnection } from '../services/connectionService'
+import type { Contact } from '../types'
 import { ConfirmDialog } from '../components/ConfirmDialog'
-import { useConnection } from '../contexts/ConnectionContext'
-import { useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+import { useContacts } from '../hooks/useContacts'
+import { ContactDialog } from '../components/contacts/ContactDialog'
+import { deleteContact } from '../services/contactService'
 
-export const ConnectionsPage = () => {
+export const ContactsPage = () => {
     const { user } = useAuth()
-    const { connections } = useConnections(user?.uid ?? '');
-    const { onActiveConnectionChange } = useConnection()
-    const navigate = useNavigate()
+    const { connectionId } = useParams<{ connectionId: string }>()
+    const { contacts } = useContacts(user?.uid ?? '', connectionId ?? '');
 
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [selectedConnection, setSelectedConnection] = useState<Connection | null>(null);
+    const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
     const [deleting, setDeleting] = useState(false);
 
-    const handleEditConnection = (connection: Connection) => {
-        setSelectedConnection(connection);
+    const handleEditContact = (contact: Contact) => {
+        setSelectedContact(contact);
         setDialogOpen(true);
     }
 
-    const handleDeleteConnection = (connection: Connection) => {
-        setSelectedConnection(connection);
+    const handleDeleteContact = (contact: Contact) => {
+        setSelectedContact(contact);
         setConfirmDialogOpen(true);
     }
 
-    const handleSelectConnection = (connection: Connection) => {
-        onActiveConnectionChange(connection)
-        navigate(`/connections/${connection.id}/contacts`)
-    }
-
     const handleConfirmDelete = async () => {
-        if (!selectedConnection || !user) return;
+        if (!selectedContact || !user) return;
 
         try {
             setDeleting(true);
-            await deleteConnection({ id: selectedConnection.id });
+            await deleteContact({ id: selectedContact.id });
             setConfirmDialogOpen(false);
         } catch (error) {
-            console.error("Erro ao excluir conexão:", error);
+            console.error("Erro ao excluir contato:", error);
         } finally {
             setDeleting(false);
-            setSelectedConnection(null);
+            setSelectedContact(null);
         }
     }
 
@@ -68,16 +61,16 @@ export const ConnectionsPage = () => {
         <Box className="p-8 flex flex-col gap-6">
             <Box className="flex items-center justify-between">
                 <Box>
-                    <Typography variant="h5" sx={{ fontWeight: 600 }}>Conexões</Typography>
+                    <Typography variant="h5" sx={{ fontWeight: 600 }}>Contatos</Typography>
                     <Typography variant="body2" color="text.secondary">
-                        Gerencie seus canais de envio de mensagens
+                        Gerencie seus contatos
                     </Typography>
                 </Box>
                 <Button variant="contained"
                     startIcon={<Add />}
                     onClick={() => setDialogOpen(true)}
                 >
-                    Nova conexão
+                    Novo contato
                 </Button>
             </Box>
 
@@ -86,55 +79,56 @@ export const ConnectionsPage = () => {
                     <TableHead>
                         <TableRow>
                             <TableCell>Nome</TableCell>
+                            <TableCell>Telefone</TableCell>
                             <TableCell>Criado em</TableCell>
                             <TableCell align="right">Ações</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {connections.length === 0 && (
+                        {contacts.length === 0 && (
                             <TableRow>
-                                <TableCell colSpan={3}>
+                                <TableCell colSpan={4}>
                                     <Box className="flex flex-col items-center gap-2 py-8 text-center">
-                                        <HubOutlined sx={{ fontSize: 40, color: 'text.disabled' }} />
+                                        <ContactsOutlined sx={{ fontSize: 40, color: 'text.disabled' }} />
                                         <Typography variant="body2" color="text.secondary">
-                                            Nenhuma conexão encontrada
+                                            Nenhum contato encontrado
                                         </Typography>
                                         <Typography variant="caption" color="text.disabled">
-                                            Crie sua primeira conexão para começar
+                                            Crie seu primeiro contato para começar
                                         </Typography>
                                     </Box>
                                 </TableCell>
                             </TableRow>
                         )}
-                        {connections.map((connection) => (
-                            <TableRow key={connection.id} hover>
+                        {contacts.map((contact) => (
+                            <TableRow key={contact.id} hover>
                                 <TableCell>
                                     <Box className="flex items-center gap-2">
-                                        <HubOutlined fontSize="small" color="primary" />
+                                        <Person fontSize="small" color="primary" />
                                         <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                                            {connection.name}
+                                            {contact.name}
                                         </Typography>
                                     </Box>
                                 </TableCell>
                                 <TableCell>
                                     <Typography variant="body2" color="text.secondary">
-                                        {connection.createdAt && connection.createdAt.toDate().toLocaleDateString('pt-BR')}
+                                        {contact.phone}
+                                    </Typography>
+                                </TableCell>
+                                <TableCell>
+                                    <Typography variant="body2" color="text.secondary">
+                                        {contact.createdAt && contact.createdAt.toDate().toLocaleDateString('pt-BR')}
                                     </Typography>
                                 </TableCell>
                                 <TableCell align="right">
-                                    <Tooltip title="Selecionar conexão" onClick={() => handleSelectConnection(connection)}>
-                                        <IconButton size="small">
-                                            <HubOutlined fontSize="small" />
-                                        </IconButton>
-                                    </Tooltip>
                                     <Tooltip title="Editar"
-                                        onClick={() => handleEditConnection(connection)}
+                                        onClick={() => handleEditContact(contact)}
                                     >
                                         <IconButton size="small">
                                             <EditOutlined fontSize="small" />
                                         </IconButton>
                                     </Tooltip>
-                                    <Tooltip title="Excluir" onClick={() => handleDeleteConnection(connection)}>
+                                    <Tooltip title="Excluir" onClick={() => handleDeleteContact(contact)}>
                                         <IconButton size="small" color="error">
                                             <DeleteOutlined fontSize="small" />
                                         </IconButton>
@@ -145,17 +139,18 @@ export const ConnectionsPage = () => {
                     </TableBody>
                 </Table>
             </TableContainer>
-            <ConnectionDialog open={dialogOpen}
+            <ContactDialog open={dialogOpen}
                 onClose={() => {
                     setDialogOpen(false);
-                    setSelectedConnection(null);
+                    setSelectedContact(null);
                 }}
-                selectedConnection={selectedConnection}
+                selectedContact={selectedContact}
+                connectionId={connectionId}
             />
             <ConfirmDialog
                 open={confirmDialogOpen}
-                title="Excluir conexão?"
-                description="Tem certeza que deseja excluir essa conexão?"
+                title="Excluir contato?"
+                description="Tem certeza que deseja excluir esse contato? Essa ação não pode ser desfeita."
                 onClose={() => setConfirmDialogOpen(false)}
                 onConfirm={handleConfirmDelete}
                 submitting={deleting}
