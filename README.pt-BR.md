@@ -6,6 +6,10 @@ Plataforma SaaS para gerenciar campanhas de mensagens em broadcast com agendamen
 
 Cada conta tem seu próprio workspace. Conexões agrupam contatos, e mensagens podem ser enviadas imediatamente ou agendadas para um horário futuro. As mensagens agendadas transitam para *enviadas* automaticamente via Cloud Function que roda a cada minuto.
 
+## Demo
+
+[https://broadcast-app-8ba79.web.app](https://broadcast-app-8ba79.web.app)
+
 ## Stack
 
 - **Frontend:** React 18, TypeScript, Vite, Material UI, Tailwind CSS

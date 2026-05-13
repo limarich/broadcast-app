@@ -6,6 +6,10 @@ SaaS platform for managing broadcast message campaigns with real-time scheduling
 
 Each account has its own workspace. Connections group contacts, and messages can be sent immediately or scheduled for a future time. Scheduled messages transition to *sent* automatically via a Cloud Function that runs every minute.
 
+## Demo
+
+[https://broadcast-app-8ba79.web.app](https://broadcast-app-8ba79.web.app)
+
 ## Stack
 
 - **Frontend:** React 18, TypeScript, Vite, Material UI, Tailwind CSS
