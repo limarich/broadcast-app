@@ -145,7 +145,7 @@ export const ContactsPage = () => {
                     setSelectedContact(null);
                 }}
                 selectedContact={selectedContact}
-                connectionId={connectionId ? ""}
+                connectionId={connectionId || ""}
             />
             <ConfirmDialog
                 open={confirmDialogOpen}
