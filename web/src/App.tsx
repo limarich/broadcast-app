@@ -5,6 +5,7 @@ import { RegisterPage } from './pages/RegisterPage'
 import { AppLayout } from './components/AppLayout'
 import { ConnectionsPage } from './pages/ConnectionsPage'
 import { ContactsPage } from './pages/ContactsPage'
+import { MessagesPage } from './pages/MessagePage'
 
 function App() {
   return (
@@ -20,7 +21,7 @@ function App() {
         <Route path='/' element={<ConnectionsPage />} />
         <Route path='/connections' element={<ConnectionsPage />} />
         <Route path='/connections/:connectionId/contacts' element={<ContactsPage />} />
-        <Route path='/connections/:connectionId/messages' element={<div>Connection Messages</div>} />
+        <Route path='/connections/:connectionId/messages' element={<MessagesPage />} />
 
       </Route>
     </Routes>
