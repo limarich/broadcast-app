@@ -1,9 +1,11 @@
+import type { Timestamp } from "firebase/firestore";
+
 export interface Connection {
     id: string;
     name: string;
     userId: string;
 
-    createdAt: Date;
+    createdAt: Timestamp;
 }
 
 export interface Contact {
@@ -13,7 +15,7 @@ export interface Contact {
     connectionId: string;
     userId: string;
 
-    createdAt: Date;
+    createdAt: Timestamp;
 }
 
 export type MessageStatus = "SCHEDULED" | "SENT";
@@ -22,12 +24,12 @@ export interface Message {
     id: string;
     content: string;
     status: MessageStatus;
-    scheduledAt?: Date;
-    sentAt?: Date;
+    scheduledAt?: Timestamp;
+    sentAt?: Timestamp;
 
     userId: string;
     connectionId: string;
     contactIds: string[];
 
-    createdAt: Date;
+    createdAt: Timestamp;
 }
