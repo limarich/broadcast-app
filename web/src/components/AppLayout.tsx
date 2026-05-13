@@ -1,7 +1,7 @@
-import { ContactsOutlined, HubOutlined, Logout, PeopleAlt, SendOutlined } from '@mui/icons-material'
+import { ContactsOutlined, HubOutlined, Logout, SendOutlined } from '@mui/icons-material'
 import {
     Box,
-    Divider,
+
     Drawer,
     IconButton,
     List,

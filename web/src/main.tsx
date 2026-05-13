@@ -9,7 +9,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { theme } from './lib/theme.ts';
 
 
-createRoot(document.getElementById('root')).render(
+createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
     <StrictMode>
       <AuthProvider>

@@ -144,7 +144,7 @@ export const RegisterPage = () => {
             <FormControlLabel
                 control={<Checkbox size="small" />}
                 value={acceptedTerms}
-                onChange={(e) => setAcceptedTerms((prev) => !prev)}
+                onChange={() => setAcceptedTerms((prev) => !prev)}
                 label={
                     <Typography variant="body2" color="text.secondary" component="span">
                         Ao se cadastrar, você aceita nossos{' '}
