@@ -1,9 +1,15 @@
-@import "tailwindcss";
+@import "tailwindcss" layer(tailwind);
+
+@theme {
+  --color-primary: #0052CC;
+  --color-secondary: #42526E;
+  --color-tertiary: #00875A;
+  --color-neutral: #091E42;
+  --font-sans: 'Inter', system-ui, sans-serif;
+}
 
 * {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
 body {
