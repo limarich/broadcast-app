@@ -2,7 +2,7 @@ import { Alert, Button, Checkbox, CircularProgress, FormControlLabel, IconButton
 import React, { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useAuth } from "../contexts/AuthContext"
-import { VisibilityOff, Visibility } from "@mui/icons-material"
+import { VisibilityOff, Visibility, EmailOutlined, LockOutlined, EnhancedEncryptionOutlined } from "@mui/icons-material"
 
 export const RegisterPage = () => {
     const { register } = useAuth()
@@ -73,6 +73,17 @@ export const RegisterPage = () => {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
+                            slotProps={
+                                {
+                                    input: {
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <EmailOutlined fontSize="small" />
+                                            </InputAdornment>
+                                        )
+                                    }
+                                }
+                            }
                         />
                         <TextField
                             label="Senha"
@@ -85,6 +96,11 @@ export const RegisterPage = () => {
                             required
                             slotProps={{
                                 input: {
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <LockOutlined fontSize="small" />
+                                        </InputAdornment>
+                                    ),
                                     endAdornment: (
                                         <InputAdornment position="end">
                                             <IconButton onClick={() => setShowPassword((prev) => !prev)} edge="end">
@@ -106,6 +122,11 @@ export const RegisterPage = () => {
                             required
                             slotProps={{
                                 input: {
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <EnhancedEncryptionOutlined fontSize="small" />
+                                        </InputAdornment>
+                                    ),
                                     endAdornment: (
                                         <InputAdornment position="end">
                                             <IconButton onClick={() => setShowConfirmPassword((prev) => !prev)} edge="end">

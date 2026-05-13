@@ -2,7 +2,7 @@ import { Alert, Button, Checkbox, CircularProgress, FormControlLabel, IconButton
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useAuth } from "../contexts/AuthContext"
-import { VisibilityOff, Visibility } from "@mui/icons-material"
+import { VisibilityOff, Visibility, EmailOutlined, LockOutlined } from "@mui/icons-material"
 
 export const LoginPage = () => {
     const { login } = useAuth()
@@ -53,6 +53,17 @@ export const LoginPage = () => {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
+                            slotProps={
+                                {
+                                    input: {
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <EmailOutlined fontSize="small" />
+                                            </InputAdornment>
+                                        )
+                                    }
+                                }
+                            }
                         />
                         <TextField
                             label="Senha"
@@ -65,6 +76,11 @@ export const LoginPage = () => {
                             required
                             slotProps={{
                                 input: {
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <LockOutlined fontSize="small" />
+                                        </InputAdornment>
+                                    ),
                                     endAdornment: (
                                         <InputAdornment position="end">
                                             <IconButton onClick={() => setShowPassword((prev) => !prev)} edge="end">
