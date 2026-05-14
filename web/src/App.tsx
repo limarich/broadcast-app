@@ -6,12 +6,17 @@ import { AppLayout } from './components/AppLayout'
 import { ConnectionsPage } from './pages/ConnectionsPage'
 import { ContactsPage } from './pages/ContactsPage'
 import { MessagesPage } from './pages/MessagePage'
+import { VerifyEmailPage } from './pages/VerifyEmailPage'
+import { AuthLayout } from './components/AuthLayout'
 
 function App() {
   return (
     <Routes>
-      <Route path='/login' element={<LoginPage />} />
-      <Route path='/register' element={<RegisterPage />} />
+      <Route element={<AuthLayout />}>
+        <Route path='/login' element={<LoginPage />} />
+        <Route path='/register' element={<RegisterPage />} />
+        <Route path='/verify-email' element={<VerifyEmailPage />} />
+      </Route>
 
       <Route element={
         <PrivateRoute>

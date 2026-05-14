@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut, type User } from "firebase/auth";
+import { createUserWithEmailAndPassword, onAuthStateChanged, sendEmailVerification, signInWithEmailAndPassword, signOut, type User } from "firebase/auth";
 import { createContext, useContext, useEffect, useState } from "react";
 import { auth } from "../lib/firebase";
 
@@ -21,7 +21,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const register = async (email: string, password: string) => {
-        await createUserWithEmailAndPassword(auth, email, password);
+        const { user } = await createUserWithEmailAndPassword(auth, email, password);
+        await sendEmailVerification(user);
     };
 
     const logout = async () => {

@@ -1,9 +1,8 @@
-import { Alert, Button, Checkbox, CircularProgress, FormControlLabel, IconButton, InputAdornment, Link as MuiLink, Stack, TextField, Typography } from "@mui/material"
+import { Alert, Box, Button, Checkbox, CircularProgress, FormControlLabel, IconButton, InputAdornment, Link as MuiLink, Stack, TextField, Typography } from "@mui/material"
 import React, { useState } from "react"
 import { Link as RouterLink, useNavigate } from "react-router-dom"
 import { useAuth } from "../contexts/AuthContext"
 import { VisibilityOff, Visibility, EmailOutlined, LockOutlined, EnhancedEncryptionOutlined } from "@mui/icons-material"
-import { AuthLayout } from "../components/AuthLayout"
 import { FirebaseError } from "firebase/app"
 
 export const RegisterPage = () => {
@@ -43,7 +42,7 @@ export const RegisterPage = () => {
         setLoading(true)
         try {
             await register(email, password)
-            navigate('/login', { state: { email } });
+            navigate('/verify-email', { state: { email } });
         } catch (e) {
             if (e instanceof FirebaseError) {
                 switch (e.code) {
@@ -66,7 +65,7 @@ export const RegisterPage = () => {
     }
 
     return (
-        <AuthLayout>
+        <Box className="flex flex-col gap-4">
             <Stack spacing={0.5}>
                 <Typography variant="h6" sx={{ fontWeight: 600 }} color="text.primary">Crie sua conta</Typography>
                 <Typography variant="body2" color="text.secondary">Informe seus dados para fazer parte da melhor plataforma de broadcast do Brasil!</Typography>
@@ -175,6 +174,6 @@ export const RegisterPage = () => {
                 Já tem uma conta?{' '}
                 <MuiLink component={RouterLink} to="/login" sx={{ fontWeight: 500 }}>Fazer login</MuiLink>
             </Typography>
-        </AuthLayout>
+        </Box>
     )
 }

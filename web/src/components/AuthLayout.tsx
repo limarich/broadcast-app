@@ -1,11 +1,7 @@
 import { Box, Link as MuiLink, Paper, Stack, Typography } from "@mui/material"
-import type { ReactNode } from "react"
+import { Outlet } from "react-router-dom"
 
-interface AuthLayoutProps {
-    children: ReactNode
-}
-
-export const AuthLayout = ({ children }: AuthLayoutProps) => (
+export const AuthLayout = () => (
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
         <Box
             component="header"
@@ -31,7 +27,7 @@ export const AuthLayout = ({ children }: AuthLayoutProps) => (
                 }}
             >
                 <Stack spacing={3}>
-                    {children}
+                    <Outlet />
                 </Stack>
             </Paper>
 

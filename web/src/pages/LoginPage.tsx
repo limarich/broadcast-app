@@ -1,9 +1,8 @@
-import { Alert, Button, Checkbox, CircularProgress, FormControlLabel, IconButton, InputAdornment, Link as MuiLink, Stack, TextField, Typography } from "@mui/material"
+import { Alert, Box, Button, Checkbox, CircularProgress, FormControlLabel, IconButton, InputAdornment, Link as MuiLink, Stack, TextField, Typography } from "@mui/material"
 import { useEffect, useState } from "react"
 import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "../contexts/AuthContext"
 import { VisibilityOff, Visibility, EmailOutlined, LockOutlined } from "@mui/icons-material"
-import { AuthLayout } from "../components/AuthLayout"
 import { FirebaseError } from "firebase/app"
 
 export const LoginPage = () => {
@@ -51,7 +50,7 @@ export const LoginPage = () => {
     }, [])
 
     return (
-        <AuthLayout>
+        <Box className="flex flex-col gap-4">
             <Stack spacing={0.5}>
                 <Typography variant="h6" sx={{ fontWeight: 600 }} color="text.primary">Bem-vindo de volta</Typography>
                 <Typography variant="body2" color="text.secondary">Acesse sua conta para continuar</Typography>
@@ -124,6 +123,6 @@ export const LoginPage = () => {
                 Não tem uma conta?{' '}
                 <MuiLink component={RouterLink} to="/register" sx={{ fontWeight: 500 }}>Criar conta</MuiLink>
             </Typography>
-        </AuthLayout>
+        </Box>
     )
 }
