@@ -1,10 +1,12 @@
 import { Link as MuiLink, Paper, Stack, Typography } from "@mui/material"
 import { Link, Outlet } from "react-router-dom"
+import { HubOutlined } from "@mui/icons-material"
 
 export const AuthLayout = () => (
     <div className="min-h-screen flex flex-col">
         <header className="flex justify-start w-full border-b border-gray-200 p-2">
-            <Link to={'/'}>
+            <Link to={'/'} className="flex items-center gap-2">
+                <HubOutlined color="primary" />
                 <Typography variant="h6" className="font-bold text-primary">Broadcast</Typography>
             </Link>
         </header>

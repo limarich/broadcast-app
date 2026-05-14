@@ -42,7 +42,8 @@ export const AppLayout = () => {
     const drawerContent = (
         <>
             <Box className="flex items-center justify-between px-4 py-2 border-b border-gray-200">
-                <Link to="/connections" onClick={() => setMobileOpen(false)}>
+                <Link to="/connections" onClick={() => setMobileOpen(false)} className="flex items-center gap-2">
+                    <HubOutlined color="primary" />
                     <Typography variant="h6" className="font-bold text-primary">
                         Broadcast
                     </Typography>
@@ -121,7 +122,8 @@ export const AppLayout = () => {
                     <IconButton edge="start" onClick={() => setMobileOpen(true)} sx={{ mr: 1 }}>
                         <MenuOutlined />
                     </IconButton>
-                    <Typography variant="h6" className="font-bold text-primary" sx={{ flex: 1, textAlign: 'center' }}>
+                    <Typography variant="h6" className="font-bold text-primary flex items-center justify-center gap-2" sx={{ flex: 1 }}>
+                        <HubOutlined color="primary" />
                         Broadcast
                     </Typography>
                     <Tooltip title="Sair">
