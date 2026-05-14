@@ -29,6 +29,7 @@ import { useToast } from '../hooks/useToast'
 import { Toast } from '../components/Toast'
 import { useConnection } from '../contexts/ConnectionContext'
 import { formatPhoneNumber, formatDate } from '../utils/format'
+import { truncateText } from '../utils/format'
 
 export const ContactsPage = () => {
     const { user } = useAuth()
@@ -109,92 +110,94 @@ export const ContactsPage = () => {
 
             <TableContainer component={Paper} elevation={0} variant="outlined" sx={{ minHeight: 480, display: 'flex', flexDirection: 'column' }}>
                 <Box sx={{ flex: 1 }}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Nome</TableCell>
-                            <TableCell>Telefone</TableCell>
-                            <TableCell>Criado em</TableCell>
-                            <TableCell align="right">Ações</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {loading && Array.from({ length: 4 }).map((_, i) => (
-                            <TableRow key={i}>
-                                <TableCell><Skeleton variant="text" width="55%" /></TableCell>
-                                <TableCell><Skeleton variant="text" width="45%" /></TableCell>
-                                <TableCell><Skeleton variant="text" width="35%" /></TableCell>
-                                <TableCell align="right">
-                                    <Skeleton variant="circular" width={28} height={28} sx={{ display: 'inline-block', mr: 0.5 }} />
-                                    <Skeleton variant="circular" width={28} height={28} sx={{ display: 'inline-block' }} />
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                        {!loading && contacts.length === 0 && (
+                    <Table>
+                        <TableHead>
                             <TableRow>
-                                <TableCell colSpan={4}>
-                                    <Box className="flex flex-col items-center gap-2 py-8 text-center">
-                                        <ContactsOutlined sx={{ fontSize: 40, color: 'text.disabled' }} />
+                                <TableCell>Nome</TableCell>
+                                <TableCell>Telefone</TableCell>
+                                <TableCell>Criado em</TableCell>
+                                <TableCell align="right">Ações</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {loading && Array.from({ length: 4 }).map((_, i) => (
+                                <TableRow key={i}>
+                                    <TableCell><Skeleton variant="text" width="55%" /></TableCell>
+                                    <TableCell><Skeleton variant="text" width="45%" /></TableCell>
+                                    <TableCell><Skeleton variant="text" width="35%" /></TableCell>
+                                    <TableCell align="right">
+                                        <Skeleton variant="circular" width={28} height={28} sx={{ display: 'inline-block', mr: 0.5 }} />
+                                        <Skeleton variant="circular" width={28} height={28} sx={{ display: 'inline-block' }} />
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                            {!loading && contacts.length === 0 && (
+                                <TableRow>
+                                    <TableCell colSpan={4}>
+                                        <Box className="flex flex-col items-center gap-2 py-8 text-center">
+                                            <ContactsOutlined sx={{ fontSize: 40, color: 'text.disabled' }} />
+                                            <Typography variant="body2" color="text.secondary">
+                                                Nenhum contato encontrado
+                                            </Typography>
+                                            <Typography variant="caption" color="text.disabled">
+                                                Crie seu primeiro contato para começar
+                                            </Typography>
+                                        </Box>
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                            {!loading && paginatedContacts.map((contact) => (
+                                <TableRow key={contact.id} hover>
+                                    <TableCell>
+                                        <Box className="flex items-center gap-2">
+                                            <Person fontSize="small" color="primary" />
+                                            <Tooltip title={contact.name.length > 40 ? contact.name : ''}>
+                                                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                                    {truncateText(contact.name, 40)}
+                                                </Typography>
+                                            </Tooltip>
+                                        </Box>
+                                    </TableCell>
+                                    <TableCell>
                                         <Typography variant="body2" color="text.secondary">
-                                            Nenhum contato encontrado
+                                            {formatPhoneNumber(contact.phone)}
                                         </Typography>
-                                        <Typography variant="caption" color="text.disabled">
-                                            Crie seu primeiro contato para começar
+                                    </TableCell>
+                                    <TableCell>
+                                        <Typography variant="body2" color="text.secondary">
+                                            {formatDate(contact.createdAt)}
                                         </Typography>
-                                    </Box>
-                                </TableCell>
-                            </TableRow>
-                        )}
-                        {!loading && paginatedContacts.map((contact) => (
-                            <TableRow key={contact.id} hover>
-                                <TableCell>
-                                    <Box className="flex items-center gap-2">
-                                        <Person fontSize="small" color="primary" />
-                                        <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                                            {contact.name}
-                                        </Typography>
-                                    </Box>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography variant="body2" color="text.secondary">
-                                        {formatPhoneNumber(contact.phone)}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography variant="body2" color="text.secondary">
-                                        {formatDate(contact.createdAt)}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell align="right">
-                                    <Tooltip title="Enviar mensagem">
-                                        <IconButton
-                                            size="small"
-                                            color="primary"
-                                            onClick={(e) => {
-                                                e.stopPropagation()
-                                                navigate(`/connections/${connectionId}/messages`, {
-                                                    state: { preselectedContactId: contact.id }
-                                                })
-                                            }}
-                                        >
-                                            <SendOutlined fontSize="small" />
-                                        </IconButton>
-                                    </Tooltip>
-                                    <Tooltip title="Editar">
-                                        <IconButton size="small" onClick={() => handleEditContact(contact)}>
-                                            <EditOutlined fontSize="small" />
-                                        </IconButton>
-                                    </Tooltip>
-                                    <Tooltip title="Excluir">
-                                        <IconButton size="small" color="error" onClick={() => handleDeleteContact(contact)}>
-                                            <DeleteOutlined fontSize="small" />
-                                        </IconButton>
-                                    </Tooltip>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        <Tooltip title="Enviar mensagem">
+                                            <IconButton
+                                                size="small"
+                                                color="primary"
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    navigate(`/connections/${connectionId}/messages`, {
+                                                        state: { preselectedContactId: contact.id }
+                                                    })
+                                                }}
+                                            >
+                                                <SendOutlined fontSize="small" />
+                                            </IconButton>
+                                        </Tooltip>
+                                        <Tooltip title="Editar">
+                                            <IconButton size="small" onClick={() => handleEditContact(contact)}>
+                                                <EditOutlined fontSize="small" />
+                                            </IconButton>
+                                        </Tooltip>
+                                        <Tooltip title="Excluir">
+                                            <IconButton size="small" color="error" onClick={() => handleDeleteContact(contact)}>
+                                                <DeleteOutlined fontSize="small" />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
                 </Box>
                 <TablePagination
                     component="div"

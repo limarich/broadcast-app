@@ -33,6 +33,7 @@ import { MessageDialog } from '../components/messages/MessageDialog'
 import { useToast } from '../hooks/useToast'
 import { Toast } from '../components/Toast'
 import { formatDate } from '../utils/format'
+import { truncateText } from '../utils/format'
 
 type FilterStatus = 'ALL' | 'SCHEDULED' | 'SENT'
 
@@ -159,132 +160,126 @@ export const MessagesPage = () => {
 
             <TableContainer component={Paper} elevation={0} variant="outlined" sx={{ minHeight: 480, display: 'flex', flexDirection: 'column' }}>
                 <Box sx={{ flex: 1 }}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Conteúdo</TableCell>
-                            <TableCell>Destinatários</TableCell>
-                            <TableCell>Status</TableCell>
-                            <TableCell>Agendado para</TableCell>
-                            <TableCell>Enviado em</TableCell>
-                            <TableCell align="right">Ações</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {loading && Array.from({ length: 4 }).map((_, i) => (
-                            <TableRow key={i}>
-                                <TableCell><Skeleton variant="text" width="70%" /></TableCell>
-                                <TableCell><Skeleton variant="text" width="55%" /></TableCell>
-                                <TableCell><Skeleton variant="rounded" width={80} height={24} /></TableCell>
-                                <TableCell><Skeleton variant="text" width="50%" /></TableCell>
-                                <TableCell><Skeleton variant="text" width="50%" /></TableCell>
-                                <TableCell align="right">
-                                    <Skeleton variant="circular" width={28} height={28} sx={{ display: 'inline-block', mr: 0.5 }} />
-                                    <Skeleton variant="circular" width={28} height={28} sx={{ display: 'inline-block' }} />
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                        {!loading && filteredMessages.length === 0 && (
+                    <Table>
+                        <TableHead>
                             <TableRow>
-                                <TableCell colSpan={6}>
-                                    <Box className="flex flex-col items-center gap-2 py-8 text-center">
-                                        <SendOutlined sx={{ fontSize: 40, color: 'text.disabled' }} />
-                                        <Typography variant="body2" color="text.secondary">
-                                            Nenhuma mensagem encontrada
-                                        </Typography>
-                                        <Typography variant="caption" color="text.disabled">
-                                            {filter === 'ALL'
-                                                ? 'Crie sua primeira mensagem para começar'
-                                                : `Nenhuma mensagem com status "${filter === 'SCHEDULED' ? 'agendada' : 'enviada'}"`
-                                            }
-                                        </Typography>
-                                    </Box>
-                                </TableCell>
+                                <TableCell>Conteúdo</TableCell>
+                                <TableCell>Destinatários</TableCell>
+                                <TableCell>Status</TableCell>
+                                <TableCell>Agendado para</TableCell>
+                                <TableCell>Enviado em</TableCell>
+                                <TableCell align="right">Ações</TableCell>
                             </TableRow>
-                        )}
-                        {!loading && paginatedMessages.map((message) => (
-                            <TableRow key={message.id} hover>
-                                <TableCell sx={{ maxWidth: 220 }}>
-                                    <Typography
-                                        variant="body2"
-                                        sx={{
-                                            fontWeight: 500,
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                            whiteSpace: 'nowrap',
-                                        }}
-                                    >
-                                        {message.content}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell sx={{ maxWidth: 180 }}>
-                                    <Typography
-                                        variant="body2"
-                                        color="text.secondary"
-                                        sx={{
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                            whiteSpace: 'nowrap',
-                                        }}
-                                    >
-                                        {getContactNames(message.contactIds)}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell>
-                                    {message.status === 'SCHEDULED' ? (
-                                        <Chip
-                                            icon={<ScheduleOutlined />}
-                                            label="Agendada"
-                                            size="small"
-                                            color="warning"
-                                            variant="outlined"
-                                        />
-                                    ) : (
-                                        <Chip
-                                            icon={<SendOutlined />}
-                                            label="Enviada"
-                                            size="small"
-                                            color="success"
-                                            variant="outlined"
-                                        />
-                                    )}
-                                </TableCell>
-                                <TableCell>
-                                    <Typography variant="body2" color="text.secondary">
-                                        {message.scheduledAt ? formatDate(message.scheduledAt, true) : '-'}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography variant="body2" color="text.secondary">
-                                        {message.sentAt ? formatDate(message.sentAt, true) : '-'}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell align="right">
-                                    <Tooltip title="Editar">
-                                        <span>
+                        </TableHead>
+                        <TableBody>
+                            {loading && Array.from({ length: 4 }).map((_, i) => (
+                                <TableRow key={i}>
+                                    <TableCell><Skeleton variant="text" width="70%" /></TableCell>
+                                    <TableCell><Skeleton variant="text" width="55%" /></TableCell>
+                                    <TableCell><Skeleton variant="rounded" width={80} height={24} /></TableCell>
+                                    <TableCell><Skeleton variant="text" width="50%" /></TableCell>
+                                    <TableCell><Skeleton variant="text" width="50%" /></TableCell>
+                                    <TableCell align="right">
+                                        <Skeleton variant="circular" width={28} height={28} sx={{ display: 'inline-block', mr: 0.5 }} />
+                                        <Skeleton variant="circular" width={28} height={28} sx={{ display: 'inline-block' }} />
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                            {!loading && filteredMessages.length === 0 && (
+                                <TableRow>
+                                    <TableCell colSpan={6}>
+                                        <Box className="flex flex-col items-center gap-2 py-8 text-center">
+                                            <SendOutlined sx={{ fontSize: 40, color: 'text.disabled' }} />
+                                            <Typography variant="body2" color="text.secondary">
+                                                Nenhuma mensagem encontrada
+                                            </Typography>
+                                            <Typography variant="caption" color="text.disabled">
+                                                {filter === 'ALL'
+                                                    ? 'Crie sua primeira mensagem para começar'
+                                                    : `Nenhuma mensagem com status "${filter === 'SCHEDULED' ? 'agendada' : 'enviada'}"`
+                                                }
+                                            </Typography>
+                                        </Box>
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                            {!loading && paginatedMessages.map((message) => (
+                                <TableRow key={message.id} hover>
+                                    <TableCell sx={{ maxWidth: 220 }}>
+                                        <Tooltip title={message.content.length > 60 ? message.content : ''}>
+                                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                                {truncateText(message.content, 60)}
+                                            </Typography>
+                                        </Tooltip>
+                                    </TableCell>
+                                    <TableCell sx={{ maxWidth: 180 }}>
+                                        <Typography
+                                            variant="body2"
+                                            color="text.secondary"
+                                            sx={{
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                                whiteSpace: 'nowrap',
+                                            }}
+                                        >
+                                            {getContactNames(message.contactIds)}
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell>
+                                        {message.status === 'SCHEDULED' ? (
+                                            <Chip
+                                                icon={<ScheduleOutlined />}
+                                                label="Agendada"
+                                                size="small"
+                                                color="warning"
+                                                variant="outlined"
+                                            />
+                                        ) : (
+                                            <Chip
+                                                icon={<SendOutlined />}
+                                                label="Enviada"
+                                                size="small"
+                                                color="success"
+                                                variant="outlined"
+                                            />
+                                        )}
+                                    </TableCell>
+                                    <TableCell>
+                                        <Typography variant="body2" color="text.secondary">
+                                            {message.scheduledAt ? formatDate(message.scheduledAt, true) : '-'}
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Typography variant="body2" color="text.secondary">
+                                            {message.sentAt ? formatDate(message.sentAt, true) : '-'}
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        <Tooltip title="Editar">
+                                            <span>
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={() => handleEditMessage(message)}
+                                                    disabled={message.status === 'SENT'}
+                                                >
+                                                    <EditOutlined fontSize="small" />
+                                                </IconButton>
+                                            </span>
+                                        </Tooltip>
+                                        <Tooltip title="Excluir">
                                             <IconButton
                                                 size="small"
-                                                onClick={() => handleEditMessage(message)}
-                                                disabled={message.status === 'SENT'}
+                                                color="error"
+                                                onClick={() => handleDeleteMessage(message)}
                                             >
-                                                <EditOutlined fontSize="small" />
+                                                <DeleteOutlined fontSize="small" />
                                             </IconButton>
-                                        </span>
-                                    </Tooltip>
-                                    <Tooltip title="Excluir">
-                                        <IconButton
-                                            size="small"
-                                            color="error"
-                                            onClick={() => handleDeleteMessage(message)}
-                                        >
-                                            <DeleteOutlined fontSize="small" />
-                                        </IconButton>
-                                    </Tooltip>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                                        </Tooltip>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
                 </Box>
                 <TablePagination
                     component="div"

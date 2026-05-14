@@ -16,6 +16,7 @@ import {
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useConnection } from '../contexts/ConnectionContext'
+import { truncateText } from '../utils/format'
 
 const DRAWER_WIDTH = 240
 
@@ -59,9 +60,11 @@ export const AppLayout = () => {
                 </Box>
 
                 <Box className="px-4 py-2">
-                    <Typography variant="caption" className="text-secondary" noWrap>
-                        {user?.email}
-                    </Typography>
+                    <Tooltip title={(user?.email?.length ?? 0) > 28 ? user!.email! : ''}>
+                        <Typography variant="caption" className="text-secondary" noWrap>
+                            {truncateText(user?.email ?? '', 28)}
+                        </Typography>
+                    </Tooltip>
                 </Box>
 
                 <List dense disablePadding>

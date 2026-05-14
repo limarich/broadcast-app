@@ -26,7 +26,7 @@ import { useConnection } from '../contexts/ConnectionContext'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from '../hooks/useToast'
 import { Toast } from '../components/Toast'
-import { formatDate } from '../utils/format'
+import { truncateText, formatDate } from '../utils/format'
 
 export const ConnectionsPage = () => {
     const { user } = useAuth()
@@ -97,86 +97,88 @@ export const ConnectionsPage = () => {
 
             <TableContainer component={Paper} elevation={0} variant="outlined" sx={{ minHeight: 480, display: 'flex', flexDirection: 'column' }}>
                 <Box sx={{ flex: 1 }}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Nome</TableCell>
-                            <TableCell>Criado em</TableCell>
-                            <TableCell align="right">Ações</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {loading && Array.from({ length: 4 }).map((_, i) => (
-                            <TableRow key={i}>
-                                <TableCell><Skeleton variant="text" width="60%" /></TableCell>
-                                <TableCell><Skeleton variant="text" width="40%" /></TableCell>
-                                <TableCell><Skeleton variant="rounded" width={80} height={28} /></TableCell>
-                                <TableCell align="right">
-                                    <Skeleton variant="circular" width={28} height={28} sx={{ display: 'inline-block', mr: 0.5 }} />
-                                    <Skeleton variant="circular" width={28} height={28} sx={{ display: 'inline-block' }} />
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                        {!loading && connections.length === 0 && (
+                    <Table>
+                        <TableHead>
                             <TableRow>
-                                <TableCell colSpan={4}>
-                                    <Box className="flex flex-col items-center gap-2 py-8 text-center">
-                                        <HubOutlined sx={{ fontSize: 40, color: 'text.disabled' }} />
+                                <TableCell>Nome</TableCell>
+                                <TableCell>Criado em</TableCell>
+                                <TableCell align="right">Ações</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {loading && Array.from({ length: 4 }).map((_, i) => (
+                                <TableRow key={i}>
+                                    <TableCell><Skeleton variant="text" width="60%" /></TableCell>
+                                    <TableCell><Skeleton variant="text" width="40%" /></TableCell>
+                                    <TableCell><Skeleton variant="rounded" width={80} height={28} /></TableCell>
+                                    <TableCell align="right">
+                                        <Skeleton variant="circular" width={28} height={28} sx={{ display: 'inline-block', mr: 0.5 }} />
+                                        <Skeleton variant="circular" width={28} height={28} sx={{ display: 'inline-block' }} />
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                            {!loading && connections.length === 0 && (
+                                <TableRow>
+                                    <TableCell colSpan={4}>
+                                        <Box className="flex flex-col items-center gap-2 py-8 text-center">
+                                            <HubOutlined sx={{ fontSize: 40, color: 'text.disabled' }} />
+                                            <Typography variant="body2" color="text.secondary">
+                                                Nenhuma conexão encontrada
+                                            </Typography>
+                                            <Typography variant="caption" color="text.disabled">
+                                                Crie sua primeira conexão para começar
+                                            </Typography>
+                                        </Box>
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                            {!loading && paginatedConnections.map((connection) => (
+                                <TableRow
+                                    key={connection.id}
+                                    hover
+                                    onClick={() => handleSelectConnection(connection)}
+                                    sx={{ cursor: 'pointer' }}
+                                >
+                                    <TableCell>
+                                        <Box className="flex items-center gap-2">
+                                            <HubOutlined fontSize="small" color="primary" />
+                                            <Tooltip title={connection.name.length > 40 ? connection.name : ''}>
+                                                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                                    {truncateText(connection.name, 40)}
+                                                </Typography>
+                                            </Tooltip>
+                                        </Box>
+                                    </TableCell>
+                                    <TableCell>
                                         <Typography variant="body2" color="text.secondary">
-                                            Nenhuma conexão encontrada
+                                            {formatDate(connection.createdAt)}
                                         </Typography>
-                                        <Typography variant="caption" color="text.disabled">
-                                            Crie sua primeira conexão para começar
-                                        </Typography>
-                                    </Box>
-                                </TableCell>
-                            </TableRow>
-                        )}
-                        {!loading && paginatedConnections.map((connection) => (
-                            <TableRow
-                                key={connection.id}
-                                hover
-                                onClick={() => handleSelectConnection(connection)}
-                                sx={{ cursor: 'pointer' }}
-                            >
-                                <TableCell>
-                                    <Box className="flex items-center gap-2">
-                                        <HubOutlined fontSize="small" color="primary" />
-                                        <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                                            {connection.name}
-                                        </Typography>
-                                    </Box>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography variant="body2" color="text.secondary">
-                                        {formatDate(connection.createdAt)}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell align="right">
-                                    <Button
-                                        size="small"
-                                        variant="outlined"
-                                        endIcon={<ArrowForwardOutlined fontSize="small" />}
-                                        onClick={(e) => { e.stopPropagation(); handleSelectConnection(connection) }}
-                                        sx={{ mr: 1 }}
-                                    >
-                                        Acessar
-                                    </Button>
-                                    <Tooltip title="Editar">
-                                        <IconButton size="small" onClick={(e) => { e.stopPropagation(); handleEditConnection(connection) }}>
-                                            <EditOutlined fontSize="small" />
-                                        </IconButton>
-                                    </Tooltip>
-                                    <Tooltip title="Excluir">
-                                        <IconButton size="small" color="error" onClick={(e) => { e.stopPropagation(); handleDeleteConnection(connection) }}>
-                                            <DeleteOutlined fontSize="small" />
-                                        </IconButton>
-                                    </Tooltip>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        <Button
+                                            size="small"
+                                            variant="outlined"
+                                            endIcon={<ArrowForwardOutlined fontSize="small" />}
+                                            onClick={(e) => { e.stopPropagation(); handleSelectConnection(connection) }}
+                                            sx={{ mr: 1 }}
+                                        >
+                                            Acessar
+                                        </Button>
+                                        <Tooltip title="Editar">
+                                            <IconButton size="small" onClick={(e) => { e.stopPropagation(); handleEditConnection(connection) }}>
+                                                <EditOutlined fontSize="small" />
+                                            </IconButton>
+                                        </Tooltip>
+                                        <Tooltip title="Excluir">
+                                            <IconButton size="small" color="error" onClick={(e) => { e.stopPropagation(); handleDeleteConnection(connection) }}>
+                                                <DeleteOutlined fontSize="small" />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
                 </Box>
                 <TablePagination
                     component="div"
