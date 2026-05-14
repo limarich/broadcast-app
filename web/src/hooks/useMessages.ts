@@ -8,6 +8,7 @@ export const useMessages = (userId: string, connectionId: string) => {
     const [messages, setMessages] = useState<Message[]>([])
 
     useEffect(() => {
+        if (!userId || !connectionId) return
         const q = query(collection(db, "messages"),
             where("userId", "==", userId),
             where("connectionId", "==", connectionId),

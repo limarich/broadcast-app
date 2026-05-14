@@ -8,6 +8,7 @@ export const useContacts = (userId: string, connectionId: string) => {
     const [contacts, setContacts] = useState<Contact[]>([])
 
     useEffect(() => {
+        if (!userId || !connectionId) return
         const q = query(collection(db, "contacts"),
             where("userId", "==", userId),
             where("connectionId", "==", connectionId),

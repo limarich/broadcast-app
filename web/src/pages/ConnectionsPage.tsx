@@ -122,20 +122,18 @@ export const ConnectionsPage = () => {
                                     </Typography>
                                 </TableCell>
                                 <TableCell align="right">
-                                    <Tooltip title="Selecionar conexão" onClick={() => handleSelectConnection(connection)}>
-                                        <IconButton size="small">
+                                    <Tooltip title="Selecionar conexão">
+                                        <IconButton size="small" onClick={() => handleSelectConnection(connection)}>
                                             <HubOutlined fontSize="small" />
                                         </IconButton>
                                     </Tooltip>
-                                    <Tooltip title="Editar"
-                                        onClick={() => handleEditConnection(connection)}
-                                    >
-                                        <IconButton size="small">
+                                    <Tooltip title="Editar">
+                                        <IconButton size="small" onClick={() => handleEditConnection(connection)}>
                                             <EditOutlined fontSize="small" />
                                         </IconButton>
                                     </Tooltip>
-                                    <Tooltip title="Excluir" onClick={() => handleDeleteConnection(connection)}>
-                                        <IconButton size="small" color="error">
+                                    <Tooltip title="Excluir">
+                                        <IconButton size="small" color="error" onClick={() => handleDeleteConnection(connection)}>
                                             <DeleteOutlined fontSize="small" />
                                         </IconButton>
                                     </Tooltip>

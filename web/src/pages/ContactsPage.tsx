@@ -47,7 +47,7 @@ export const ContactsPage = () => {
 
         try {
             setDeleting(true);
-            await deleteContact({ id: selectedContact.id });
+            await deleteContact({ id: selectedContact.id, connectionId: connectionId ?? '' });
             setConfirmDialogOpen(false);
         } catch (error) {
             console.error("Erro ao excluir contato:", error);
@@ -121,15 +121,13 @@ export const ContactsPage = () => {
                                     </Typography>
                                 </TableCell>
                                 <TableCell align="right">
-                                    <Tooltip title="Editar"
-                                        onClick={() => handleEditContact(contact)}
-                                    >
-                                        <IconButton size="small">
+                                    <Tooltip title="Editar">
+                                        <IconButton size="small" onClick={() => handleEditContact(contact)}>
                                             <EditOutlined fontSize="small" />
                                         </IconButton>
                                     </Tooltip>
-                                    <Tooltip title="Excluir" onClick={() => handleDeleteContact(contact)}>
-                                        <IconButton size="small" color="error">
+                                    <Tooltip title="Excluir">
+                                        <IconButton size="small" color="error" onClick={() => handleDeleteContact(contact)}>
                                             <DeleteOutlined fontSize="small" />
                                         </IconButton>
                                     </Tooltip>

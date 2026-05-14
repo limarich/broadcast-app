@@ -8,6 +8,7 @@ export const useConnections = (userId: string) => {
     const [connections, setConnections] = useState<Connection[]>([])
 
     useEffect(() => {
+        if (!userId) return
         const q = query(collection(db, "connections"), where("userId", "==", userId), orderBy("createdAt", "desc"));
 
         const unsubscribe = onSnapshot(q, (snapshot) => {

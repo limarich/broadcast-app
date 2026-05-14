@@ -31,7 +31,8 @@ export const addMessage = async ({ userId, connectionId, content, contactIds, sc
         content,
         contactIds,
         status: scheduledAt ? "SCHEDULED" : "SENT",
-        ...(scheduledAt && { scheduledAt, sentAt: null }),
+        scheduledAt: scheduledAt ?? null,
+        sentAt: scheduledAt ? null : new Date(),
         createdAt: new Date(),
     });
 
@@ -40,7 +41,13 @@ export const addMessage = async ({ userId, connectionId, content, contactIds, sc
 export const updateMessage = async ({ id, content, contactIds, status, scheduledAt }: UpdateMessageDTO) => {
 
     const messageRef = doc(db, "messages", id);
-    return await updateDoc(messageRef, { content, contactIds, status, scheduledAt, ...(status === "SENT" && { sentAt: new Date() }) });
+    const data: Record<string, unknown> = {}
+    if (content !== undefined) data.content = content
+    if (contactIds !== undefined) data.contactIds = contactIds
+    if (status !== undefined) data.status = status
+    if (scheduledAt !== undefined) data.scheduledAt = scheduledAt
+    if (status === "SENT") data.sentAt = new Date()
+    return await updateDoc(messageRef, data)
 
 }
 

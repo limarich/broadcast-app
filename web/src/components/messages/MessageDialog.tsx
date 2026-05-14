@@ -81,6 +81,7 @@ export const MessageDialog = ({ open, onClose, selectedMessage, connectionId, co
                     content,
                     contactIds: selectedContactIds,
                     scheduledAt: parsedScheduledAt,
+                    status: parsedScheduledAt ? 'SCHEDULED' : 'SENT',
                 })
             } else {
                 await addMessage({
