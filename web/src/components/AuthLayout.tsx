@@ -1,10 +1,12 @@
 import { Link as MuiLink, Paper, Stack, Typography } from "@mui/material"
-import { Outlet } from "react-router-dom"
+import { Link, Outlet } from "react-router-dom"
 
 export const AuthLayout = () => (
     <div className="min-h-screen flex flex-col">
         <header className="flex justify-start w-full border-b border-gray-200 p-2">
-            <Typography variant="h6" className="font-bold text-primary">Broadcast</Typography>
+            <Link to={'/'}>
+                <Typography variant="h6" className="font-bold text-primary">Broadcast</Typography>
+            </Link>
         </header>
 
         <section className="flex flex-1 items-center justify-center bg-gray-50 py-12 px-4">
