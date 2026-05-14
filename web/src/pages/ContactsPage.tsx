@@ -1,4 +1,4 @@
-import { Add, ContactsOutlined, DeleteOutlined, EditOutlined, NavigateNextOutlined, Person } from '@mui/icons-material'
+import { Add, ContactsOutlined, DeleteOutlined, EditOutlined, NavigateNextOutlined, Person, SendOutlined } from '@mui/icons-material'
 import {
     Box,
     Breadcrumbs,
@@ -158,6 +158,20 @@ export const ContactsPage = () => {
                                     </Typography>
                                 </TableCell>
                                 <TableCell align="right">
+                                    <Tooltip title="Enviar mensagem">
+                                        <IconButton
+                                            size="small"
+                                            color="primary"
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                navigate(`/connections/${connectionId}/messages`, {
+                                                    state: { preselectedContactId: contact.id }
+                                                })
+                                            }}
+                                        >
+                                            <SendOutlined fontSize="small" />
+                                        </IconButton>
+                                    </Tooltip>
                                     <Tooltip title="Editar">
                                         <IconButton size="small" onClick={() => handleEditContact(contact)}>
                                             <EditOutlined fontSize="small" />

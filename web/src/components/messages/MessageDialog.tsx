@@ -25,13 +25,14 @@ interface MessageDialogProps {
     open: boolean;
     onClose: () => void;
     selectedMessage?: Message | null;
+    preselectedContactId?: string | null;
     connectionId: string;
     contacts: Contact[];
     onSuccess?: (message: string) => void;
     onError?: (message: string) => void;
 }
 
-export const MessageDialog = ({ open, onClose, selectedMessage, connectionId, contacts, onSuccess, onError }: MessageDialogProps) => {
+export const MessageDialog = ({ open, onClose, selectedMessage, preselectedContactId, connectionId, contacts, onSuccess, onError }: MessageDialogProps) => {
     const { user } = useAuth()
 
     const [content, setContent] = useState('')
@@ -51,7 +52,14 @@ export const MessageDialog = ({ open, onClose, selectedMessage, connectionId, co
     useEffect(() => {
         if (open) {
             setContent(selectedMessage?.content ?? '')
-            setSelectedContactIds(selectedMessage?.contactIds ?? [])
+            
+            if (selectedMessage) {
+                setSelectedContactIds(selectedMessage.contactIds ?? [])
+            } else if (preselectedContactId) {
+                setSelectedContactIds([preselectedContactId])
+            } else {
+                setSelectedContactIds([])
+            }
             if (selectedMessage?.scheduledAt) {
                 const date = typeof (selectedMessage.scheduledAt as any).toDate === 'function'
                     ? (selectedMessage.scheduledAt as any).toDate()
@@ -61,7 +69,7 @@ export const MessageDialog = ({ open, onClose, selectedMessage, connectionId, co
                 setScheduledAt('')
             }
         }
-    }, [open, selectedMessage])
+    }, [open, selectedMessage, preselectedContactId])
 
     const handleToggleContact = (contactId: string) => {
         setSelectedContactIds((prev) =>

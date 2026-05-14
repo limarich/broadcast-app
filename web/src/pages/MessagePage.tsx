@@ -19,8 +19,8 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material'
-import { useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useConnection } from '../contexts/ConnectionContext'
 import { useMessages } from '../hooks/useMessages'
@@ -31,6 +31,7 @@ import type { Message } from '../types'
 import { MessageDialog } from '../components/messages/MessageDialog'
 import { useToast } from '../hooks/useToast'
 import { Toast } from '../components/Toast'
+import type { Timestamp } from 'firebase/firestore'
 
 type FilterStatus = 'ALL' | 'SCHEDULED' | 'SENT'
 
@@ -41,12 +42,14 @@ export const MessagesPage = () => {
     const { contacts } = useContacts(user?.uid ?? '', connectionId ?? '')
     const { activedConnection } = useConnection()
     const navigate = useNavigate()
+    const location = useLocation()
 
     const { toast, showToast, hideToast } = useToast()
 
     const [filter, setFilter] = useState<FilterStatus>('ALL')
     const [dialogOpen, setDialogOpen] = useState(false)
     const [selectedMessage, setSelectedMessage] = useState<Message | null>(null)
+    const [preselectedContactId, setPreselectedContactId] = useState<string | null>(null)
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
     const [deleting, setDeleting] = useState(false)
 
@@ -87,13 +90,19 @@ export const MessagesPage = () => {
             .join(', ')
     }
 
-    const formatDate = (date: unknown) => {
+    const formatDate = (date: Timestamp | null | undefined): string => {
         if (!date) return '-'
-        if (typeof (date as any).toDate === 'function') {
-            return (date as any).toDate().toLocaleString('pt-BR')
-        }
-        return new Date(date as string).toLocaleString('pt-BR')
+        return date.toDate().toLocaleString('pt-BR')
     }
+
+    useEffect(() => {
+        if (location.state?.preselectedContactId) {
+            setSelectedMessage(null)
+            setPreselectedContactId(location.state.preselectedContactId)
+            setDialogOpen(true)
+            window.history.replaceState({}, '')
+        }
+    }, [location.state])
 
     return (
         <Box className="p-8 flex flex-col gap-6">
@@ -123,6 +132,7 @@ export const MessagesPage = () => {
                     startIcon={<Add />}
                     onClick={() => {
                         setSelectedMessage(null)
+                        setPreselectedContactId(null)
                         setDialogOpen(true)
                     }}
                 >
@@ -278,8 +288,10 @@ export const MessagesPage = () => {
                 onClose={() => {
                     setDialogOpen(false)
                     setSelectedMessage(null)
+                    setPreselectedContactId(null)
                 }}
                 selectedMessage={selectedMessage}
+                preselectedContactId={preselectedContactId}
                 connectionId={connectionId ?? ''}
                 contacts={contacts}
                 onSuccess={(msg) => showToast(msg)}
