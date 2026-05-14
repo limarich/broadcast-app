@@ -8,6 +8,9 @@ import { ContactsPage } from './pages/ContactsPage'
 import { MessagesPage } from './pages/MessagePage'
 import { VerifyEmailPage } from './pages/VerifyEmailPage'
 import { AuthLayout } from './components/AuthLayout'
+import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage'
+import { TermsOfServicePage } from './pages/TermsOfServicePage'
+import { FaqPage } from './pages/FaqPage'
 
 function App() {
   return (
@@ -16,6 +19,9 @@ function App() {
         <Route path='/login' element={<LoginPage />} />
         <Route path='/register' element={<RegisterPage />} />
         <Route path='/verify-email' element={<VerifyEmailPage />} />
+        <Route path='/privacy' element={<PrivacyPolicyPage />} />
+        <Route path='/terms' element={<TermsOfServicePage />} />
+        <Route path='/faq' element={<FaqPage />} />
       </Route>
 
       <Route element={
