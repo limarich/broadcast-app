@@ -25,7 +25,7 @@ export const AppLayout = () => {
     const navigate = useNavigate()
     const location = useLocation()
 
-    const { activedConnection } = useConnection()
+    const { activeConnection } = useConnection()
 
     const handleLogout = async () => {
         await logout()
@@ -76,32 +76,32 @@ export const AppLayout = () => {
                         </ListItemIcon>
                         <ListItemText primary="Conexões" />
                     </ListItemButton>
-                    {!activedConnection && (
+                    {!activeConnection && (
                         <Box className="px-4 py-2">
                             <Typography variant="caption" color="text.secondary">
                                 Selecione uma conexão para ver contatos e mensagens
                             </Typography>
                         </Box>
                     )}
-                    {activedConnection && (
+                    {activeConnection && (
                         <>
                             <Box className="px-4 pt-3 pb-1">
                                 <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600 }}>
-                                    Conexão: {activedConnection.name}
+                                    Conexão: {activeConnection.name}
                                 </Typography>
                                 <Divider className="mt-1" />
                             </Box>
                             <ListItemButton
-                                selected={location.pathname === `/connections/${activedConnection.id}/contacts`}
-                                onClick={() => navigate(`/connections/${activedConnection.id}/contacts`)}>
+                                selected={location.pathname === `/connections/${activeConnection.id}/contacts`}
+                                onClick={() => navigate(`/connections/${activeConnection.id}/contacts`)}>
                                 <ListItemIcon>
                                     <ContactsOutlined fontSize="small" />
                                 </ListItemIcon>
                                 <ListItemText primary="Contatos" />
                             </ListItemButton>
                             <ListItemButton
-                                selected={location.pathname === `/connections/${activedConnection.id}/messages`}
-                                onClick={() => navigate(`/connections/${activedConnection.id}/messages`)}>
+                                selected={location.pathname === `/connections/${activeConnection.id}/messages`}
+                                onClick={() => navigate(`/connections/${activeConnection.id}/messages`)}>
                                 <ListItemIcon>
                                     <SendOutlined fontSize="small" />
                                 </ListItemIcon>
