@@ -31,7 +31,7 @@ import type { Message } from '../types'
 import { MessageDialog } from '../components/messages/MessageDialog'
 import { useToast } from '../hooks/useToast'
 import { Toast } from '../components/Toast'
-import type { Timestamp } from 'firebase/firestore'
+import { formatDate } from '../utils/format'
 
 type FilterStatus = 'ALL' | 'SCHEDULED' | 'SENT'
 
@@ -88,11 +88,6 @@ export const MessagesPage = () => {
         return contactIds
             .map((id) => contacts.find((c) => c.id === id)?.name ?? id)
             .join(', ')
-    }
-
-    const formatDate = (date: Timestamp | null | undefined): string => {
-        if (!date) return '-'
-        return date.toDate().toLocaleString('pt-BR')
     }
 
     useEffect(() => {
@@ -247,12 +242,12 @@ export const MessagesPage = () => {
                                 </TableCell>
                                 <TableCell>
                                     <Typography variant="body2" color="text.secondary">
-                                        {message.scheduledAt ? formatDate(message.scheduledAt) : '-'}
+                                        {message.scheduledAt ? formatDate(message.scheduledAt, true) : '-'}
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
                                     <Typography variant="body2" color="text.secondary">
-                                        {message.sentAt ? formatDate(message.sentAt) : '-'}
+                                        {message.sentAt ? formatDate(message.sentAt, true) : '-'}
                                     </Typography>
                                 </TableCell>
                                 <TableCell align="right">

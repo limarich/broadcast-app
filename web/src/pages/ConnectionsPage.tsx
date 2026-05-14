@@ -25,6 +25,7 @@ import { useConnection } from '../contexts/ConnectionContext'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from '../hooks/useToast'
 import { Toast } from '../components/Toast'
+import { formatDate } from '../utils/format'
 
 export const ConnectionsPage = () => {
     const { user } = useAuth()
@@ -141,7 +142,7 @@ export const ConnectionsPage = () => {
                                 </TableCell>
                                 <TableCell>
                                     <Typography variant="body2" color="text.secondary">
-                                        {connection.createdAt && connection.createdAt.toDate().toLocaleDateString('pt-BR')}
+                                        {formatDate(connection.createdAt)}
                                     </Typography>
                                 </TableCell>
                                 <TableCell align="right">

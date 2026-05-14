@@ -27,6 +27,7 @@ import { deleteContact } from '../services/contactService'
 import { useToast } from '../hooks/useToast'
 import { Toast } from '../components/Toast'
 import { useConnection } from '../contexts/ConnectionContext'
+import { formatPhoneNumber, formatDate } from '../utils/format'
 
 export const ContactsPage = () => {
     const { user } = useAuth()
@@ -149,12 +150,12 @@ export const ContactsPage = () => {
                                 </TableCell>
                                 <TableCell>
                                     <Typography variant="body2" color="text.secondary">
-                                        {contact.phone}
+                                        {formatPhoneNumber(contact.phone)}
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
                                     <Typography variant="body2" color="text.secondary">
-                                        {contact.createdAt && contact.createdAt.toDate().toLocaleDateString('pt-BR')}
+                                        {formatDate(contact.createdAt)}
                                     </Typography>
                                 </TableCell>
                                 <TableCell align="right">

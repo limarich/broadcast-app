@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import type { Contact } from "../../types";
 import { addContact, updateContact } from "../../services/contactService";
+import { formatPhoneNumber } from "../../utils/format";
 
 interface ContactDialogProps {
     open: boolean;
@@ -32,7 +33,7 @@ export const ContactDialog = ({ open, onClose, selectedContact, connectionId, on
     useEffect(() => {
         if (open) {
             setName(selectedContact?.name ?? '')
-            setPhone(selectedContact?.phone ?? '')
+            setPhone(formatPhoneNumber(selectedContact?.phone ?? ''))
         }
     }, [open, selectedContact])
 
@@ -78,7 +79,7 @@ export const ContactDialog = ({ open, onClose, selectedContact, connectionId, on
                     fullWidth
                     margin="normal"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    onChange={(e) => setPhone(formatPhoneNumber(e.target.value))}
                 />
             </DialogContent>
             <DialogActions>
