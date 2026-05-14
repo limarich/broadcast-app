@@ -2,6 +2,8 @@ import { ContactsOutlined, HubOutlined, Logout, SendOutlined } from '@mui/icons-
 import {
     Box,
 
+    Divider,
+
     Drawer,
     IconButton,
     List,
@@ -11,7 +13,7 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material'
-import { Link, Outlet, useNavigate } from 'react-router-dom'
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useConnection } from '../contexts/ConnectionContext'
 
@@ -20,6 +22,7 @@ const DRAWER_WIDTH = 240
 export const AppLayout = () => {
     const { user, logout } = useAuth()
     const navigate = useNavigate()
+    const location = useLocation()
 
     const { activedConnection } = useConnection()
 
@@ -62,23 +65,42 @@ export const AppLayout = () => {
                 </Box>
 
                 <List dense disablePadding>
-                    <ListItemButton onClick={() => navigate('/connections')}>
+                    <ListItemButton
+                        selected={location.pathname === '/connections'}
+                        onClick={() => navigate('/connections')}>
                         <ListItemIcon>
                             <HubOutlined fontSize="small" />
                         </ListItemIcon>
                         <ListItemText primary="Conexões" />
                     </ListItemButton>
+                    {!activedConnection && (
+                        <Box className="px-4 py-2">
+                            <Typography variant="caption" color="text.secondary">
+                                Selecione uma conexão para ver contatos e mensagens
+                            </Typography>
+                        </Box>
+                    )}
                     {activedConnection && (
                         <>
-                            <ListItemButton onClick={() => navigate(`/connections/${activedConnection.id}/contacts`)}>
+                            <Box className="px-4 pt-3 pb-1">
+                                <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600 }}>
+                                    Conexão: {activedConnection.name}
+                                </Typography>
+                                <Divider className="mt-1" />
+                            </Box>
+                            <ListItemButton
+                                selected={location.pathname === `/connections/${activedConnection.id}/contacts`}
+                                onClick={() => navigate(`/connections/${activedConnection.id}/contacts`)}>
                                 <ListItemIcon>
-                                    <ContactsOutlined />
+                                    <ContactsOutlined fontSize="small" />
                                 </ListItemIcon>
                                 <ListItemText primary="Contatos" />
                             </ListItemButton>
-                            <ListItemButton onClick={() => navigate(`/connections/${activedConnection.id}/messages`)}>
+                            <ListItemButton
+                                selected={location.pathname === `/connections/${activedConnection.id}/messages`}
+                                onClick={() => navigate(`/connections/${activedConnection.id}/messages`)}>
                                 <ListItemIcon>
-                                    <SendOutlined />
+                                    <SendOutlined fontSize="small" />
                                 </ListItemIcon>
                                 <ListItemText primary="Mensagens" />
                             </ListItemButton>

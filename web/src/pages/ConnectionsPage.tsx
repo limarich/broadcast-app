@@ -1,4 +1,4 @@
-import { Add, DeleteOutlined, EditOutlined, HubOutlined } from '@mui/icons-material'
+import { Add, ArrowForwardOutlined, DeleteOutlined, EditOutlined, HubOutlined } from '@mui/icons-material'
 import {
     Box,
     Button,
@@ -102,8 +102,8 @@ export const ConnectionsPage = () => {
                             <TableRow key={i}>
                                 <TableCell><Skeleton variant="text" width="60%" /></TableCell>
                                 <TableCell><Skeleton variant="text" width="40%" /></TableCell>
+                                <TableCell><Skeleton variant="rounded" width={80} height={28} /></TableCell>
                                 <TableCell align="right">
-                                    <Skeleton variant="circular" width={28} height={28} sx={{ display: 'inline-block', mr: 0.5 }} />
                                     <Skeleton variant="circular" width={28} height={28} sx={{ display: 'inline-block', mr: 0.5 }} />
                                     <Skeleton variant="circular" width={28} height={28} sx={{ display: 'inline-block' }} />
                                 </TableCell>
@@ -111,7 +111,7 @@ export const ConnectionsPage = () => {
                         ))}
                         {!loading && connections.length === 0 && (
                             <TableRow>
-                                <TableCell colSpan={3}>
+                                <TableCell colSpan={4}>
                                     <Box className="flex flex-col items-center gap-2 py-8 text-center">
                                         <HubOutlined sx={{ fontSize: 40, color: 'text.disabled' }} />
                                         <Typography variant="body2" color="text.secondary">
@@ -125,7 +125,12 @@ export const ConnectionsPage = () => {
                             </TableRow>
                         )}
                         {!loading && connections.map((connection) => (
-                            <TableRow key={connection.id} hover>
+                            <TableRow
+                                key={connection.id}
+                                hover
+                                onClick={() => handleSelectConnection(connection)}
+                                sx={{ cursor: 'pointer' }}
+                            >
                                 <TableCell>
                                     <Box className="flex items-center gap-2">
                                         <HubOutlined fontSize="small" color="primary" />
@@ -140,18 +145,22 @@ export const ConnectionsPage = () => {
                                     </Typography>
                                 </TableCell>
                                 <TableCell align="right">
-                                    <Tooltip title="Selecionar conexão">
-                                        <IconButton size="small" onClick={() => handleSelectConnection(connection)}>
-                                            <HubOutlined fontSize="small" />
-                                        </IconButton>
-                                    </Tooltip>
+                                    <Button
+                                        size="small"
+                                        variant="outlined"
+                                        endIcon={<ArrowForwardOutlined fontSize="small" />}
+                                        onClick={(e) => { e.stopPropagation(); handleSelectConnection(connection) }}
+                                        sx={{ mr: 1 }}
+                                    >
+                                        Acessar
+                                    </Button>
                                     <Tooltip title="Editar">
-                                        <IconButton size="small" onClick={() => handleEditConnection(connection)}>
+                                        <IconButton size="small" onClick={(e) => { e.stopPropagation(); handleEditConnection(connection) }}>
                                             <EditOutlined fontSize="small" />
                                         </IconButton>
                                     </Tooltip>
                                     <Tooltip title="Excluir">
-                                        <IconButton size="small" color="error" onClick={() => handleDeleteConnection(connection)}>
+                                        <IconButton size="small" color="error" onClick={(e) => { e.stopPropagation(); handleDeleteConnection(connection) }}>
                                             <DeleteOutlined fontSize="small" />
                                         </IconButton>
                                     </Tooltip>

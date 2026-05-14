@@ -1,9 +1,11 @@
-import { Add, DeleteOutlined, EditOutlined, SendOutlined, ScheduleOutlined, FilterListOutlined } from '@mui/icons-material'
+import { Add, DeleteOutlined, EditOutlined, FilterListOutlined, NavigateNextOutlined, ScheduleOutlined, SendOutlined } from '@mui/icons-material'
 import {
     Box,
+    Breadcrumbs,
     Button,
     Chip,
     IconButton,
+    Link,
     Paper,
     Skeleton,
     Table,
@@ -12,14 +14,15 @@ import {
     TableContainer,
     TableHead,
     TableRow,
+    ToggleButton,
+    ToggleButtonGroup,
     Tooltip,
     Typography,
-    ToggleButtonGroup,
-    ToggleButton,
 } from '@mui/material'
 import { useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { useConnection } from '../contexts/ConnectionContext'
 import { useMessages } from '../hooks/useMessages'
 import { useContacts } from '../hooks/useContacts'
 import { deleteMessage } from '../services/messageService'
@@ -36,6 +39,8 @@ export const MessagesPage = () => {
     const { connectionId } = useParams<{ connectionId: string }>()
     const { messages, loading } = useMessages(user?.uid ?? '', connectionId ?? '')
     const { contacts } = useContacts(user?.uid ?? '', connectionId ?? '')
+    const { activedConnection } = useConnection()
+    const navigate = useNavigate()
 
     const { toast, showToast, hideToast } = useToast()
 
@@ -92,6 +97,20 @@ export const MessagesPage = () => {
 
     return (
         <Box className="p-8 flex flex-col gap-6">
+            <Breadcrumbs separator={<NavigateNextOutlined fontSize="small" />}>
+                <Link
+                    component="button"
+                    variant="body2"
+                    underline="hover"
+                    color="inherit"
+                    onClick={() => navigate('/connections')}
+                >
+                    Conexões
+                </Link>
+                <Typography variant="body2" color="text.primary" className='hover:underline cursor-pointer'>
+                    {activedConnection?.name ?? '...'}
+                </Typography>
+            </Breadcrumbs>
             <Box className="flex items-center justify-between">
                 <Box>
                     <Typography variant="h5" sx={{ fontWeight: 600 }}>Mensagens</Typography>

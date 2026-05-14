@@ -1,8 +1,10 @@
-import { Add, ContactsOutlined, DeleteOutlined, EditOutlined, Person } from '@mui/icons-material'
+import { Add, ContactsOutlined, DeleteOutlined, EditOutlined, NavigateNextOutlined, Person } from '@mui/icons-material'
 import {
     Box,
+    Breadcrumbs,
     Button,
     IconButton,
+    Link,
     Paper,
     Skeleton,
     Table,
@@ -18,17 +20,20 @@ import { useAuth } from '../contexts/AuthContext'
 import { useState } from 'react'
 import type { Contact } from '../types'
 import { ConfirmDialog } from '../components/ConfirmDialog'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useContacts } from '../hooks/useContacts'
 import { ContactDialog } from '../components/contacts/ContactDialog'
 import { deleteContact } from '../services/contactService'
 import { useToast } from '../hooks/useToast'
 import { Toast } from '../components/Toast'
+import { useConnection } from '../contexts/ConnectionContext'
 
 export const ContactsPage = () => {
     const { user } = useAuth()
     const { connectionId } = useParams<{ connectionId: string }>()
     const { contacts, loading } = useContacts(user?.uid ?? '', connectionId ?? '');
+    const { activedConnection } = useConnection()
+    const navigate = useNavigate()
 
     const { toast, showToast, hideToast } = useToast()
 
@@ -66,6 +71,20 @@ export const ContactsPage = () => {
 
     return (
         <Box className="p-8 flex flex-col gap-6">
+            <Breadcrumbs separator={<NavigateNextOutlined fontSize="small" />}>
+                <Link
+                    component="button"
+                    variant="body2"
+                    underline="hover"
+                    color="inherit"
+                    onClick={() => navigate('/connections')}
+                >
+                    Conexões
+                </Link>
+                <Typography variant="body2" color="text.primary" className='hover:underline cursor-pointer'>
+                    {activedConnection?.name ?? '...'}
+                </Typography>
+            </Breadcrumbs>
             <Box className="flex items-center justify-between">
                 <Box>
                     <Typography variant="h5" sx={{ fontWeight: 600 }}>Contatos</Typography>
