@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import { PrivateRoute } from './components/PrivateRoute'
 import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
@@ -18,7 +18,7 @@ function App() {
           <AppLayout />
         </PrivateRoute>
       }>
-        <Route path='/' element={<ConnectionsPage />} />
+        <Route path='/' element={<Navigate to='/connections' replace />} />
         <Route path='/connections' element={<ConnectionsPage />} />
         <Route path='/connections/:connectionId/contacts' element={<ContactsPage />} />
         <Route path='/connections/:connectionId/messages' element={<MessagesPage />} />
