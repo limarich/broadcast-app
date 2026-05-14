@@ -32,8 +32,7 @@ import type { Message } from '../types'
 import { MessageDialog } from '../components/messages/MessageDialog'
 import { useToast } from '../hooks/useToast'
 import { Toast } from '../components/Toast'
-import { formatDate } from '../utils/format'
-import { truncateText } from '../utils/format'
+import { formatDate, truncateText } from '../utils/format'
 
 type FilterStatus = 'ALL' | 'SCHEDULED' | 'SENT'
 
@@ -42,7 +41,7 @@ export const MessagesPage = () => {
     const { connectionId } = useParams<{ connectionId: string }>()
     const { messages, loading } = useMessages(user?.uid ?? '', connectionId ?? '')
     const { contacts } = useContacts(user?.uid ?? '', connectionId ?? '')
-    const { activedConnection } = useConnection()
+    const { activeConnection } = useConnection()
     const navigate = useNavigate()
     const location = useLocation()
 
@@ -75,8 +74,7 @@ export const MessagesPage = () => {
             await deleteMessage({ id: selectedMessage.id })
             setConfirmDialogOpen(false)
             showToast('Mensagem excluída com sucesso!')
-        } catch (error) {
-            console.error('Erro ao excluir mensagem:', error)
+        } catch {
             showToast('Erro ao excluir mensagem. Tente novamente.', 'error')
         } finally {
             setDeleting(false)
@@ -121,7 +119,7 @@ export const MessagesPage = () => {
                     Conexões
                 </Link>
                 <Typography variant="body2" color="text.primary" className='hover:underline cursor-pointer'>
-                    {activedConnection?.name ?? '...'}
+                    {activeConnection?.name ?? '...'}
                 </Typography>
             </Breadcrumbs>
             <Box className="flex items-center justify-between">

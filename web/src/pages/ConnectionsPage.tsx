@@ -69,8 +69,7 @@ export const ConnectionsPage = () => {
             await deleteConnection({ id: selectedConnection.id, userId: user.uid });
             setConfirmDialogOpen(false);
             showToast('Conexão excluída com sucesso!')
-        } catch (error) {
-            console.error("Erro ao excluir conexão:", error);
+        } catch {
             showToast('Erro ao excluir conexão. Tente novamente.', 'error')
         } finally {
             setDeleting(false);

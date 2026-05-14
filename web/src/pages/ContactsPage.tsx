@@ -28,14 +28,13 @@ import { deleteContact } from '../services/contactService'
 import { useToast } from '../hooks/useToast'
 import { Toast } from '../components/Toast'
 import { useConnection } from '../contexts/ConnectionContext'
-import { formatPhoneNumber, formatDate } from '../utils/format'
-import { truncateText } from '../utils/format'
+import { formatPhoneNumber, formatDate, truncateText } from '../utils/format'
 
 export const ContactsPage = () => {
     const { user } = useAuth()
     const { connectionId } = useParams<{ connectionId: string }>()
     const { contacts, loading } = useContacts(user?.uid ?? '', connectionId ?? '');
-    const { activedConnection } = useConnection()
+    const { activeConnection } = useConnection()
     const navigate = useNavigate()
 
     const { toast, showToast, hideToast } = useToast()
@@ -68,8 +67,7 @@ export const ContactsPage = () => {
             await deleteContact({ id: selectedContact.id, connectionId, userId: user.uid });
             setConfirmDialogOpen(false);
             showToast('Contato excluído com sucesso!')
-        } catch (error) {
-            console.error("Erro ao excluir contato:", error);
+        } catch {
             showToast('Erro ao excluir contato. Tente novamente.', 'error')
         } finally {
             setDeleting(false);
@@ -90,7 +88,7 @@ export const ContactsPage = () => {
                     Conexões
                 </Link>
                 <Typography variant="body2" color="text.primary" className='hover:underline cursor-pointer'>
-                    {activedConnection?.name ?? '...'}
+                    {activeConnection?.name ?? '...'}
                 </Typography>
             </Breadcrumbs>
             <Box className="flex items-center justify-between">

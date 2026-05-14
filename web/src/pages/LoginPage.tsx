@@ -1,6 +1,6 @@
 import {
     Alert, Box, Button, Checkbox, CircularProgress, FormControlLabel,
-    IconButton, InputAdornment, Link as MuiLink, Snackbar, Stack,
+    IconButton, InputAdornment, Link as MuiLink, Stack,
     TextField, Typography
 } from "@mui/material"
 import { useEffect, useState } from "react"
@@ -24,7 +24,6 @@ export const LoginPage = () => {
     const [rememberMe, setRememberMe] = useState(false);
 
     const [resetOpen, setResetOpen] = useState(false)
-    const [successOpen, setSuccessOpen] = useState(false)
 
     const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -154,21 +153,7 @@ export const LoginPage = () => {
                 initialEmail={email}
             />
 
-            <Snackbar
-                open={successOpen}
-                autoHideDuration={6000}
-                onClose={() => setSuccessOpen(false)}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-            >
-                <Alert
-                    onClose={() => setSuccessOpen(false)}
-                    severity="success"
-                    variant="filled"
-                    sx={{ width: '100%', boxShadow: 4 }}
-                >
-                    E-mail de recuperação enviado! Verifique sua caixa de entrada.
-                </Alert>
-            </Snackbar>
+
         </Box>
     )
 }
