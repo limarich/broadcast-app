@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import { addMessage, updateMessage } from "../../services/messageService";
 import { useAuth } from "../../contexts/AuthContext";
 import type { Contact, Message } from "../../types";
+import { Timestamp } from "firebase/firestore";
 
 interface MessageDialogProps {
     open: boolean;
@@ -54,9 +55,9 @@ export const MessageDialog = ({ open, onClose, selectedMessage, preselectedConta
             }
 
             if (selectedMessage?.scheduledAt) {
-                const date = typeof (selectedMessage.scheduledAt as any).toDate === 'function'
-                    ? (selectedMessage.scheduledAt as any).toDate()
-                    : new Date(selectedMessage.scheduledAt as any)
+                const date = selectedMessage.scheduledAt instanceof Timestamp
+                    ? selectedMessage.scheduledAt.toDate()
+                    : new Date(selectedMessage.scheduledAt as string)
                 const iso = date.toISOString().slice(0, 16)
                 setScheduledAt(iso)
                 setScheduleEnabled(true)
