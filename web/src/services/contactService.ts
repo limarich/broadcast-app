@@ -1,4 +1,4 @@
-import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { addDoc, arrayRemove, collection, doc, getDocs, query, updateDoc, where, writeBatch } from "firebase/firestore";
 import { db } from "../lib/firebase";
 
 export interface AddContactDTO {
@@ -16,6 +16,8 @@ export interface UpdateContactDTO {
 
 export interface DeleteContactDTO {
     id: string;
+    connectionId: string;
+    userId: string;
 }
 
 export const addContact = async ({ userId, name, phone, connectionId }: AddContactDTO) => {
@@ -38,9 +40,19 @@ export const updateContact = async ({ id, name, phone }: UpdateContactDTO) => {
 
 }
 
-export const deleteContact = async ({ id }: DeleteContactDTO) => {
+export const deleteContact = async ({ id, connectionId, userId }: DeleteContactDTO) => {
+    const batch = writeBatch(db)
 
-    const contactRef = doc(db, "contacts", id);
-    return await deleteDoc(contactRef);
+    const messagesSnap = await getDocs(
+        query(
+            collection(db, "messages"),
+            where("connectionId", "==", connectionId),
+            where("userId", "==", userId),
+            where("contactIds", "array-contains", id)
+        )
+    )
+    messagesSnap.forEach((d) => batch.update(d.ref, { contactIds: arrayRemove(id) }))
 
+    batch.delete(doc(db, "contacts", id))
+    return await batch.commit()
 }

@@ -43,11 +43,11 @@ export const ContactsPage = () => {
     }
 
     const handleConfirmDelete = async () => {
-        if (!selectedContact || !user) return;
+        if (!selectedContact || !user || !connectionId) return;
 
         try {
             setDeleting(true);
-            await deleteContact({ id: selectedContact.id, connectionId: connectionId ?? '' });
+            await deleteContact({ id: selectedContact.id, connectionId, userId: user.uid });
             setConfirmDialogOpen(false);
         } catch (error) {
             console.error("Erro ao excluir contato:", error);

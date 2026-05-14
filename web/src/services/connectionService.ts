@@ -1,4 +1,4 @@
-import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, query, updateDoc, where, writeBatch } from "firebase/firestore";
 import { db } from "../lib/firebase";
 
 export interface AddConnectionDTO {
@@ -13,6 +13,7 @@ export interface UpdateConnectionDTO {
 
 export interface DeleteConnectionDTO {
     id: string;
+    userId: string;
 }
 
 
@@ -34,9 +35,25 @@ export const updateConnection = async ({ id, name }: UpdateConnectionDTO) => {
 
 }
 
-export const deleteConnection = async ({ id }: DeleteConnectionDTO) => {
+export const deleteConnection = async ({ id, userId }: DeleteConnectionDTO) => {
+    const batch = writeBatch(db)
 
-    const connectionRef = doc(db, "connections", id);
-    return await deleteDoc(connectionRef);
+    const contactsSnap = await getDocs(
+        query(collection(db, "contacts"),
+            where("connectionId", "==", id),
+            where("userId", "==", userId)
+        )
+    )
+    contactsSnap.forEach((d) => batch.delete(d.ref))
 
+    const messagesSnap = await getDocs(
+        query(collection(db, "messages"),
+            where("connectionId", "==", id),
+            where("userId", "==", userId)
+        )
+    )
+    messagesSnap.forEach((d) => batch.delete(d.ref))
+    batch.delete(doc(db, "connections", id))
+
+    return await batch.commit()
 }
