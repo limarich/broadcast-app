@@ -12,6 +12,7 @@ import {
     TableCell,
     TableContainer,
     TableHead,
+    TablePagination,
     TableRow,
     Tooltip,
     Typography,
@@ -38,10 +39,15 @@ export const ContactsPage = () => {
 
     const { toast, showToast, hideToast } = useToast()
 
+    const [page, setPage] = useState(0)
+    const [rowsPerPage, setRowsPerPage] = useState(10)
+
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
     const [deleting, setDeleting] = useState(false);
+
+    const paginatedContacts = contacts.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 
     const handleEditContact = (contact: Contact) => {
         setSelectedContact(contact);
@@ -101,7 +107,8 @@ export const ContactsPage = () => {
                 </Button>
             </Box>
 
-            <TableContainer component={Paper} elevation={0} variant="outlined">
+            <TableContainer component={Paper} elevation={0} variant="outlined" sx={{ minHeight: 480, display: 'flex', flexDirection: 'column' }}>
+                <Box sx={{ flex: 1 }}>
                 <Table>
                     <TableHead>
                         <TableRow>
@@ -138,7 +145,7 @@ export const ContactsPage = () => {
                                 </TableCell>
                             </TableRow>
                         )}
-                        {!loading && contacts.map((contact) => (
+                        {!loading && paginatedContacts.map((contact) => (
                             <TableRow key={contact.id} hover>
                                 <TableCell>
                                     <Box className="flex items-center gap-2">
@@ -188,6 +195,21 @@ export const ContactsPage = () => {
                         ))}
                     </TableBody>
                 </Table>
+                </Box>
+                <TablePagination
+                    component="div"
+                    count={contacts.length}
+                    page={page}
+                    onPageChange={(_, newPage) => setPage(newPage)}
+                    rowsPerPage={rowsPerPage}
+                    onRowsPerPageChange={(e) => {
+                        setRowsPerPage(parseInt(e.target.value, 10))
+                        setPage(0)
+                    }}
+                    rowsPerPageOptions={[5, 10, 25]}
+                    labelRowsPerPage="Itens por página:"
+                    labelDisplayedRows={({ from, to, count }) => `${from}–${to} de ${count}`}
+                />
             </TableContainer>
             <ContactDialog open={dialogOpen}
                 onClose={() => {

@@ -10,6 +10,7 @@ import {
     TableCell,
     TableContainer,
     TableHead,
+    TablePagination,
     TableRow,
     Tooltip,
     Typography,
@@ -35,10 +36,15 @@ export const ConnectionsPage = () => {
 
     const { toast, showToast, hideToast } = useToast()
 
+    const [page, setPage] = useState(0)
+    const [rowsPerPage, setRowsPerPage] = useState(10)
+
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedConnection, setSelectedConnection] = useState<Connection | null>(null);
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
     const [deleting, setDeleting] = useState(false);
+
+    const paginatedConnections = connections.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 
     const handleEditConnection = (connection: Connection) => {
         setSelectedConnection(connection);
@@ -89,7 +95,8 @@ export const ConnectionsPage = () => {
                 </Button>
             </Box>
 
-            <TableContainer component={Paper} elevation={0} variant="outlined">
+            <TableContainer component={Paper} elevation={0} variant="outlined" sx={{ minHeight: 480, display: 'flex', flexDirection: 'column' }}>
+                <Box sx={{ flex: 1 }}>
                 <Table>
                     <TableHead>
                         <TableRow>
@@ -125,7 +132,7 @@ export const ConnectionsPage = () => {
                                 </TableCell>
                             </TableRow>
                         )}
-                        {!loading && connections.map((connection) => (
+                        {!loading && paginatedConnections.map((connection) => (
                             <TableRow
                                 key={connection.id}
                                 hover
@@ -170,6 +177,21 @@ export const ConnectionsPage = () => {
                         ))}
                     </TableBody>
                 </Table>
+                </Box>
+                <TablePagination
+                    component="div"
+                    count={connections.length}
+                    page={page}
+                    onPageChange={(_, newPage) => setPage(newPage)}
+                    rowsPerPage={rowsPerPage}
+                    onRowsPerPageChange={(e) => {
+                        setRowsPerPage(parseInt(e.target.value, 10))
+                        setPage(0)
+                    }}
+                    rowsPerPageOptions={[5, 10, 25]}
+                    labelRowsPerPage="Itens por página:"
+                    labelDisplayedRows={({ from, to, count }) => `${from}–${to} de ${count}`}
+                />
             </TableContainer>
             <ConnectionDialog open={dialogOpen}
                 onClose={() => {

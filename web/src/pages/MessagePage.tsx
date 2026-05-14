@@ -13,6 +13,7 @@ import {
     TableCell,
     TableContainer,
     TableHead,
+    TablePagination,
     TableRow,
     ToggleButton,
     ToggleButtonGroup,
@@ -45,6 +46,9 @@ export const MessagesPage = () => {
     const location = useLocation()
 
     const { toast, showToast, hideToast } = useToast()
+
+    const [page, setPage] = useState(0)
+    const [rowsPerPage, setRowsPerPage] = useState(10)
 
     const [filter, setFilter] = useState<FilterStatus>('ALL')
     const [dialogOpen, setDialogOpen] = useState(false)
@@ -84,11 +88,15 @@ export const MessagesPage = () => {
         return message.status === filter
     })
 
+    const paginatedMessages = filteredMessages.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+
     const getContactNames = (contactIds: string[]) => {
         return contactIds
             .map((id) => contacts.find((c) => c.id === id)?.name ?? id)
             .join(', ')
     }
+
+    useEffect(() => { setPage(0) }, [filter])
 
     useEffect(() => {
         if (location.state?.preselectedContactId) {
@@ -149,7 +157,8 @@ export const MessagesPage = () => {
                 </ToggleButtonGroup>
             </Box>
 
-            <TableContainer component={Paper} elevation={0} variant="outlined">
+            <TableContainer component={Paper} elevation={0} variant="outlined" sx={{ minHeight: 480, display: 'flex', flexDirection: 'column' }}>
+                <Box sx={{ flex: 1 }}>
                 <Table>
                     <TableHead>
                         <TableRow>
@@ -193,7 +202,7 @@ export const MessagesPage = () => {
                                 </TableCell>
                             </TableRow>
                         )}
-                        {!loading && filteredMessages.map((message) => (
+                        {!loading && paginatedMessages.map((message) => (
                             <TableRow key={message.id} hover>
                                 <TableCell sx={{ maxWidth: 220 }}>
                                     <Typography
@@ -276,6 +285,21 @@ export const MessagesPage = () => {
                         ))}
                     </TableBody>
                 </Table>
+                </Box>
+                <TablePagination
+                    component="div"
+                    count={filteredMessages.length}
+                    page={page}
+                    onPageChange={(_, newPage) => setPage(newPage)}
+                    rowsPerPage={rowsPerPage}
+                    onRowsPerPageChange={(e) => {
+                        setRowsPerPage(parseInt(e.target.value, 10))
+                        setPage(0)
+                    }}
+                    rowsPerPageOptions={[5, 10, 25]}
+                    labelRowsPerPage="Itens por página:"
+                    labelDisplayedRows={({ from, to, count }) => `${from}–${to} de ${count}`}
+                />
             </TableContainer>
 
             <MessageDialog
