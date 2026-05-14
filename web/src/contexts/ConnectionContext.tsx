@@ -10,9 +10,17 @@ export interface ConnectionContextType {
 export const ConnectionContext = createContext<ConnectionContextType | undefined>(undefined);
 
 export function ConnectionProvider({ children }: { children: React.ReactNode }) {
-    const [activedConnection, setActivedConnection] = useState<Connection | null>(null);
+    const [activedConnection, setActivedConnection] = useState<Connection | null>(() => {
+        const stored = localStorage.getItem('activedConnection')
+        return stored ? JSON.parse(stored) : null
+    });
 
     const onActiveConnectionChange = (connection: Connection | null) => {
+        if (connection !== null) {
+            localStorage.setItem('activedConnection', JSON.stringify(connection));
+        } else {
+            localStorage.removeItem('activedConnection');
+        }
         setActivedConnection(connection);
     };
 

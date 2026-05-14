@@ -28,6 +28,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const logout = async () => {
+        localStorage.removeItem('activedConnection');
         await signOut(auth);
     };
 
