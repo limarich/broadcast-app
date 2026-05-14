@@ -20,8 +20,9 @@ export const RegisterPage = () => {
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
+    const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
         setError('')
 
         if (password !== confirmPassword) {
@@ -42,7 +43,7 @@ export const RegisterPage = () => {
         setLoading(true)
         try {
             await register(email, password)
-            navigate('/login')
+            navigate('/login', { state: { email } });
         } catch (e) {
             if (e instanceof FirebaseError) {
                 switch (e.code) {

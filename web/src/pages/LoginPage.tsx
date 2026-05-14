@@ -1,6 +1,6 @@
 import { Alert, Button, Checkbox, CircularProgress, FormControlLabel, IconButton, InputAdornment, Link as MuiLink, Stack, TextField, Typography } from "@mui/material"
-import { useState } from "react"
-import { Link as RouterLink, useNavigate } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "../contexts/AuthContext"
 import { VisibilityOff, Visibility, EmailOutlined, LockOutlined } from "@mui/icons-material"
 import { AuthLayout } from "../components/AuthLayout"
@@ -9,14 +9,16 @@ import { FirebaseError } from "firebase/app"
 export const LoginPage = () => {
     const { login } = useAuth()
     const navigate = useNavigate()
+    const location = useLocation();
+    const { email: prefilledEmail } = location.state || {};
 
-    const [email, setEmail] = useState('')
+    const [email, setEmail] = useState(prefilledEmail || '')
     const [password, setPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault()
         setError('')
         setLoading(true)
@@ -41,6 +43,12 @@ export const LoginPage = () => {
             setLoading(false)
         }
     }
+
+    useEffect(() => {
+        if (location.state?.email) {
+            window.history.replaceState({}, '')
+        }
+    }, [])
 
     return (
         <AuthLayout>
