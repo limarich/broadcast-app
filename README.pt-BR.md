@@ -12,7 +12,7 @@ Cada conta tem seu próprio workspace. Conexões agrupam contatos, e mensagens p
 
 ## Stack
 
-- **Frontend:** React 18, TypeScript, Vite, Material UI, Tailwind CSS
+- **Frontend:** React 19, TypeScript, Vite, Material UI, Tailwind CSS
 - **Backend:** Firebase Auth, Firestore (tempo real), Cloud Functions (agendada)
 - **Deploy:** Firebase Hosting
 

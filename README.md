@@ -12,7 +12,7 @@ Each account has its own workspace. Connections group contacts, and messages can
 
 ## Stack
 
-- **Frontend:** React 18, TypeScript, Vite, Material UI, Tailwind CSS
+- **Frontend:** React 19, TypeScript, Vite, Material UI, Tailwind CSS
 - **Backend:** Firebase Auth, Firestore (real-time), Cloud Functions (scheduled)
 - **Deploy:** Firebase Hosting
 
