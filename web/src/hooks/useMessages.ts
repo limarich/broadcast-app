@@ -6,6 +6,7 @@ import type { Message } from "../types";
 export const useMessages = (userId: string, connectionId: string) => {
 
     const [messages, setMessages] = useState<Message[]>([])
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         if (!userId || !connectionId) return
@@ -18,10 +19,11 @@ export const useMessages = (userId: string, connectionId: string) => {
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const messages = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })) as Message[];
             setMessages(messages);
+            setLoading(false);
         });
         return () => unsubscribe();
     }, [userId, connectionId]);
 
-    return { messages }
+    return { messages, loading }
 
 }

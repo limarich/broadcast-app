@@ -4,6 +4,7 @@ import {
     Button,
     IconButton,
     Paper,
+    Skeleton,
     Table,
     TableBody,
     TableCell,
@@ -25,7 +26,7 @@ import { deleteContact } from '../services/contactService'
 export const ContactsPage = () => {
     const { user } = useAuth()
     const { connectionId } = useParams<{ connectionId: string }>()
-    const { contacts } = useContacts(user?.uid ?? '', connectionId ?? '');
+    const { contacts, loading } = useContacts(user?.uid ?? '', connectionId ?? '');
 
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
@@ -85,7 +86,18 @@ export const ContactsPage = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {contacts.length === 0 && (
+                        {loading && Array.from({ length: 4 }).map((_, i) => (
+                            <TableRow key={i}>
+                                <TableCell><Skeleton variant="text" width="55%" /></TableCell>
+                                <TableCell><Skeleton variant="text" width="45%" /></TableCell>
+                                <TableCell><Skeleton variant="text" width="35%" /></TableCell>
+                                <TableCell align="right">
+                                    <Skeleton variant="circular" width={28} height={28} sx={{ display: 'inline-block', mr: 0.5 }} />
+                                    <Skeleton variant="circular" width={28} height={28} sx={{ display: 'inline-block' }} />
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                        {!loading && contacts.length === 0 && (
                             <TableRow>
                                 <TableCell colSpan={4}>
                                     <Box className="flex flex-col items-center gap-2 py-8 text-center">
@@ -100,7 +112,7 @@ export const ContactsPage = () => {
                                 </TableCell>
                             </TableRow>
                         )}
-                        {contacts.map((contact) => (
+                        {!loading && contacts.map((contact) => (
                             <TableRow key={contact.id} hover>
                                 <TableCell>
                                     <Box className="flex items-center gap-2">

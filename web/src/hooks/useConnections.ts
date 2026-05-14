@@ -6,6 +6,7 @@ import type { Connection } from "../types";
 export const useConnections = (userId: string) => {
 
     const [connections, setConnections] = useState<Connection[]>([])
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         if (!userId) return
@@ -14,10 +15,11 @@ export const useConnections = (userId: string) => {
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const connections = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })) as Connection[];
             setConnections(connections);
+            setLoading(false);
         });
         return () => unsubscribe();
     }, [userId]);
 
-    return { connections }
+    return { connections, loading }
 
 }

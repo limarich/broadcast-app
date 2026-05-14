@@ -5,6 +5,7 @@ import {
     Chip,
     IconButton,
     Paper,
+    Skeleton,
     Table,
     TableBody,
     TableCell,
@@ -31,7 +32,7 @@ type FilterStatus = 'ALL' | 'SCHEDULED' | 'SENT'
 export const MessagesPage = () => {
     const { user } = useAuth()
     const { connectionId } = useParams<{ connectionId: string }>()
-    const { messages } = useMessages(user?.uid ?? '', connectionId ?? '')
+    const { messages, loading } = useMessages(user?.uid ?? '', connectionId ?? '')
     const { contacts } = useContacts(user?.uid ?? '', connectionId ?? '')
 
     const [filter, setFilter] = useState<FilterStatus>('ALL')
@@ -131,7 +132,20 @@ export const MessagesPage = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {filteredMessages.length === 0 && (
+                        {loading && Array.from({ length: 4 }).map((_, i) => (
+                            <TableRow key={i}>
+                                <TableCell><Skeleton variant="text" width="70%" /></TableCell>
+                                <TableCell><Skeleton variant="text" width="55%" /></TableCell>
+                                <TableCell><Skeleton variant="rounded" width={80} height={24} /></TableCell>
+                                <TableCell><Skeleton variant="text" width="50%" /></TableCell>
+                                <TableCell><Skeleton variant="text" width="50%" /></TableCell>
+                                <TableCell align="right">
+                                    <Skeleton variant="circular" width={28} height={28} sx={{ display: 'inline-block', mr: 0.5 }} />
+                                    <Skeleton variant="circular" width={28} height={28} sx={{ display: 'inline-block' }} />
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                        {!loading && filteredMessages.length === 0 && (
                             <TableRow>
                                 <TableCell colSpan={6}>
                                     <Box className="flex flex-col items-center gap-2 py-8 text-center">
@@ -149,7 +163,7 @@ export const MessagesPage = () => {
                                 </TableCell>
                             </TableRow>
                         )}
-                        {filteredMessages.map((message) => (
+                        {!loading && filteredMessages.map((message) => (
                             <TableRow key={message.id} hover>
                                 <TableCell sx={{ maxWidth: 220 }}>
                                     <Typography

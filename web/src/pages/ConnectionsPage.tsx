@@ -4,6 +4,7 @@ import {
     Button,
     IconButton,
     Paper,
+    Skeleton,
     Table,
     TableBody,
     TableCell,
@@ -25,7 +26,7 @@ import { useNavigate } from 'react-router-dom'
 
 export const ConnectionsPage = () => {
     const { user } = useAuth()
-    const { connections } = useConnections(user?.uid ?? '');
+    const { connections, loading } = useConnections(user?.uid ?? '');
     const { onActiveConnectionChange } = useConnection()
     const navigate = useNavigate()
 
@@ -91,7 +92,18 @@ export const ConnectionsPage = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {connections.length === 0 && (
+                        {loading && Array.from({ length: 4 }).map((_, i) => (
+                            <TableRow key={i}>
+                                <TableCell><Skeleton variant="text" width="60%" /></TableCell>
+                                <TableCell><Skeleton variant="text" width="40%" /></TableCell>
+                                <TableCell align="right">
+                                    <Skeleton variant="circular" width={28} height={28} sx={{ display: 'inline-block', mr: 0.5 }} />
+                                    <Skeleton variant="circular" width={28} height={28} sx={{ display: 'inline-block', mr: 0.5 }} />
+                                    <Skeleton variant="circular" width={28} height={28} sx={{ display: 'inline-block' }} />
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                        {!loading && connections.length === 0 && (
                             <TableRow>
                                 <TableCell colSpan={3}>
                                     <Box className="flex flex-col items-center gap-2 py-8 text-center">
@@ -106,7 +118,7 @@ export const ConnectionsPage = () => {
                                 </TableCell>
                             </TableRow>
                         )}
-                        {connections.map((connection) => (
+                        {!loading && connections.map((connection) => (
                             <TableRow key={connection.id} hover>
                                 <TableCell>
                                     <Box className="flex items-center gap-2">
