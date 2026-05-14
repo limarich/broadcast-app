@@ -22,11 +22,15 @@ import { useParams } from 'react-router-dom'
 import { useContacts } from '../hooks/useContacts'
 import { ContactDialog } from '../components/contacts/ContactDialog'
 import { deleteContact } from '../services/contactService'
+import { useToast } from '../hooks/useToast'
+import { Toast } from '../components/Toast'
 
 export const ContactsPage = () => {
     const { user } = useAuth()
     const { connectionId } = useParams<{ connectionId: string }>()
     const { contacts, loading } = useContacts(user?.uid ?? '', connectionId ?? '');
+
+    const { toast, showToast, hideToast } = useToast()
 
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
@@ -50,8 +54,10 @@ export const ContactsPage = () => {
             setDeleting(true);
             await deleteContact({ id: selectedContact.id, connectionId, userId: user.uid });
             setConfirmDialogOpen(false);
+            showToast('Contato excluído com sucesso!')
         } catch (error) {
             console.error("Erro ao excluir contato:", error);
+            showToast('Erro ao excluir contato. Tente novamente.', 'error')
         } finally {
             setDeleting(false);
             setSelectedContact(null);
@@ -156,6 +162,8 @@ export const ContactsPage = () => {
                 }}
                 selectedContact={selectedContact}
                 connectionId={connectionId || ""}
+                onSuccess={(msg) => showToast(msg)}
+                onError={(msg) => showToast(msg, 'error')}
             />
             <ConfirmDialog
                 open={confirmDialogOpen}
@@ -166,6 +174,7 @@ export const ContactsPage = () => {
                 submitting={deleting}
                 destructive
             />
+            <Toast {...toast} onClose={hideToast} />
         </Box>
     )
 }

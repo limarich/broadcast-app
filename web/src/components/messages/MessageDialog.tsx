@@ -27,9 +27,11 @@ interface MessageDialogProps {
     selectedMessage?: Message | null;
     connectionId: string;
     contacts: Contact[];
+    onSuccess?: (message: string) => void;
+    onError?: (message: string) => void;
 }
 
-export const MessageDialog = ({ open, onClose, selectedMessage, connectionId, contacts }: MessageDialogProps) => {
+export const MessageDialog = ({ open, onClose, selectedMessage, connectionId, contacts, onSuccess, onError }: MessageDialogProps) => {
     const { user } = useAuth()
 
     const [content, setContent] = useState('')
@@ -83,6 +85,7 @@ export const MessageDialog = ({ open, onClose, selectedMessage, connectionId, co
                     scheduledAt: parsedScheduledAt,
                     status: parsedScheduledAt ? 'SCHEDULED' : 'SENT',
                 })
+                onSuccess?.('Mensagem atualizada com sucesso!')
             } else {
                 await addMessage({
                     userId: user.uid,
@@ -91,8 +94,11 @@ export const MessageDialog = ({ open, onClose, selectedMessage, connectionId, co
                     contactIds: selectedContactIds,
                     scheduledAt: parsedScheduledAt,
                 })
+                onSuccess?.('Mensagem criada com sucesso!')
             }
             onClose()
+        } catch {
+            onError?.('Erro ao salvar mensagem. Tente novamente.')
         } finally {
             setSubmitting(false)
         }

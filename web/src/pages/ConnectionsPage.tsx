@@ -23,12 +23,16 @@ import { deleteConnection } from '../services/connectionService'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { useConnection } from '../contexts/ConnectionContext'
 import { useNavigate } from 'react-router-dom'
+import { useToast } from '../hooks/useToast'
+import { Toast } from '../components/Toast'
 
 export const ConnectionsPage = () => {
     const { user } = useAuth()
     const { connections, loading } = useConnections(user?.uid ?? '');
     const { onActiveConnectionChange } = useConnection()
     const navigate = useNavigate()
+
+    const { toast, showToast, hideToast } = useToast()
 
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedConnection, setSelectedConnection] = useState<Connection | null>(null);
@@ -57,8 +61,10 @@ export const ConnectionsPage = () => {
             setDeleting(true);
             await deleteConnection({ id: selectedConnection.id, userId: user.uid });
             setConfirmDialogOpen(false);
+            showToast('Conexão excluída com sucesso!')
         } catch (error) {
             console.error("Erro ao excluir conexão:", error);
+            showToast('Erro ao excluir conexão. Tente novamente.', 'error')
         } finally {
             setDeleting(false);
             setSelectedConnection(null);
@@ -161,6 +167,8 @@ export const ConnectionsPage = () => {
                     setSelectedConnection(null);
                 }}
                 selectedConnection={selectedConnection}
+                onSuccess={(msg) => showToast(msg)}
+                onError={(msg) => showToast(msg, 'error')}
             />
             <ConfirmDialog
                 open={confirmDialogOpen}
@@ -171,6 +179,7 @@ export const ConnectionsPage = () => {
                 submitting={deleting}
                 destructive
             />
+            <Toast {...toast} onClose={hideToast} />
         </Box>
     )
 }

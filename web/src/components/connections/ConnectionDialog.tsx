@@ -17,9 +17,11 @@ interface ConnectionDialogProps {
     open: boolean;
     onClose: () => void;
     selectedConnection?: Connection | null;
+    onSuccess?: (message: string) => void;
+    onError?: (message: string) => void;
 }
 
-export const ConnectionDialog = ({ open, onClose, selectedConnection }: ConnectionDialogProps) => {
+export const ConnectionDialog = ({ open, onClose, selectedConnection, onSuccess, onError }: ConnectionDialogProps) => {
     const [name, setName] = useState('');
     const [submitting, setSubmitting] = useState(false)
 
@@ -37,12 +39,16 @@ export const ConnectionDialog = ({ open, onClose, selectedConnection }: Connecti
         try {
             if (selectedConnection) {
                 await updateConnection({ id: selectedConnection.id, name });
+                onSuccess?.('Conexão atualizada com sucesso!')
             } else {
                 await addConnection({ userId: user.uid, name });
+                onSuccess?.('Conexão criada com sucesso!')
             }
+            onClose()
+        } catch {
+            onError?.('Erro ao salvar conexão. Tente novamente.')
         } finally {
             setSubmitting(false)
-            onClose()
         }
     }
 

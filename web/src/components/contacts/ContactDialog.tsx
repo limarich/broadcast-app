@@ -18,9 +18,11 @@ interface ContactDialogProps {
     onClose: () => void;
     selectedContact?: Contact | null;
     connectionId: string;
+    onSuccess?: (message: string) => void;
+    onError?: (message: string) => void;
 }
 
-export const ContactDialog = ({ open, onClose, selectedContact, connectionId }: ContactDialogProps) => {
+export const ContactDialog = ({ open, onClose, selectedContact, connectionId, onSuccess, onError }: ContactDialogProps) => {
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [submitting, setSubmitting] = useState(false)
@@ -40,12 +42,16 @@ export const ContactDialog = ({ open, onClose, selectedContact, connectionId }: 
         try {
             if (selectedContact) {
                 await updateContact({ id: selectedContact.id, name, phone });
+                onSuccess?.('Contato atualizado com sucesso!')
             } else {
                 await addContact({ userId: user.uid, name, phone, connectionId });
+                onSuccess?.('Contato criado com sucesso!')
             }
+            onClose()
+        } catch {
+            onError?.('Erro ao salvar contato. Tente novamente.')
         } finally {
             setSubmitting(false)
-            onClose()
         }
     }
 

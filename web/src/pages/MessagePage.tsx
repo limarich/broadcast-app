@@ -26,6 +26,8 @@ import { deleteMessage } from '../services/messageService'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import type { Message } from '../types'
 import { MessageDialog } from '../components/messages/MessageDialog'
+import { useToast } from '../hooks/useToast'
+import { Toast } from '../components/Toast'
 
 type FilterStatus = 'ALL' | 'SCHEDULED' | 'SENT'
 
@@ -34,6 +36,8 @@ export const MessagesPage = () => {
     const { connectionId } = useParams<{ connectionId: string }>()
     const { messages, loading } = useMessages(user?.uid ?? '', connectionId ?? '')
     const { contacts } = useContacts(user?.uid ?? '', connectionId ?? '')
+
+    const { toast, showToast, hideToast } = useToast()
 
     const [filter, setFilter] = useState<FilterStatus>('ALL')
     const [dialogOpen, setDialogOpen] = useState(false)
@@ -57,8 +61,10 @@ export const MessagesPage = () => {
             setDeleting(true)
             await deleteMessage({ id: selectedMessage.id })
             setConfirmDialogOpen(false)
+            showToast('Mensagem excluída com sucesso!')
         } catch (error) {
             console.error('Erro ao excluir mensagem:', error)
+            showToast('Erro ao excluir mensagem. Tente novamente.', 'error')
         } finally {
             setDeleting(false)
             setSelectedMessage(null)
@@ -257,6 +263,8 @@ export const MessagesPage = () => {
                 selectedMessage={selectedMessage}
                 connectionId={connectionId ?? ''}
                 contacts={contacts}
+                onSuccess={(msg) => showToast(msg)}
+                onError={(msg) => showToast(msg, 'error')}
             />
 
             <ConfirmDialog
@@ -268,6 +276,7 @@ export const MessagesPage = () => {
                 submitting={deleting}
                 destructive
             />
+            <Toast {...toast} onClose={hideToast} />
         </Box>
     )
 }
