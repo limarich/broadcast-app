@@ -4,6 +4,7 @@ import { Link as RouterLink, useNavigate } from "react-router-dom"
 import { useAuth } from "../contexts/AuthContext"
 import { VisibilityOff, Visibility, EmailOutlined, LockOutlined } from "@mui/icons-material"
 import { AuthLayout } from "../components/AuthLayout"
+import { FirebaseError } from "firebase/app"
 
 export const LoginPage = () => {
     const { login } = useAuth()
@@ -22,9 +23,21 @@ export const LoginPage = () => {
         try {
             await login(email, password)
             navigate('/connections')
-        } catch {
-            setError('E-mail ou senha inválidos.')
-        } finally {
+        } catch (e) {
+            if (e instanceof FirebaseError) {
+                switch (e.code) {
+                    case 'auth/invalid-credential':
+                        setError('E-mail ou senha inválidos.')
+                        break
+                    case 'auth/too-many-requests':
+                        setError('Muitas tentativas. Tente novamente mais tarde.')
+                        break
+                    default:
+                        setError('Ocorreu um erro. Tente novamente.')
+                }
+            }
+        }
+        finally {
             setLoading(false)
         }
     }

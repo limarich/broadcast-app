@@ -4,6 +4,7 @@ import { Link as RouterLink, useNavigate } from "react-router-dom"
 import { useAuth } from "../contexts/AuthContext"
 import { VisibilityOff, Visibility, EmailOutlined, LockOutlined, EnhancedEncryptionOutlined } from "@mui/icons-material"
 import { AuthLayout } from "../components/AuthLayout"
+import { FirebaseError } from "firebase/app"
 
 export const RegisterPage = () => {
     const { register } = useAuth()
@@ -42,8 +43,22 @@ export const RegisterPage = () => {
         try {
             await register(email, password)
             navigate('/login')
-        } catch {
-            setError('E-mail inválido ou já cadastrado.')
+        } catch (e) {
+            if (e instanceof FirebaseError) {
+                switch (e.code) {
+                    case 'auth/email-already-in-use':
+                        setError('E-mail já cadastrado.')
+                        break
+                    case 'auth/invalid-email':
+                        setError('E-mail inválido.')
+                        break
+                    case 'auth/too-many-requests':
+                        setError('Muitas tentativas. Tente novamente mais tarde.')
+                        break
+                    default:
+                        setError('Ocorreu um erro. Tente novamente.')
+                }
+            }
         } finally {
             setLoading(false)
         }
