@@ -11,7 +11,7 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Link, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useConnection } from '../contexts/ConnectionContext'
 
@@ -43,9 +43,11 @@ export const AppLayout = () => {
                 }}
             >
                 <Box className="flex items-center justify-between px-4 py-2 border-b border-gray-200">
-                    <Typography variant="h6" className="font-bold text-primary">
-                        Broadcast
-                    </Typography>
+                    <Link to="/connections">
+                        <Typography variant="h6" className="font-bold text-primary">
+                            Broadcast
+                        </Typography>
+                    </Link>
                     <Tooltip title="Sair">
                         <IconButton size="small" onClick={handleLogout}>
                             <Logout fontSize="small" />
