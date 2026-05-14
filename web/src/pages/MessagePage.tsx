@@ -107,7 +107,7 @@ export const MessagesPage = () => {
     }, [location.state])
 
     return (
-        <Box className="p-8 flex flex-col gap-6">
+        <Box className="p-4 md:p-8 flex flex-col gap-6">
             <Breadcrumbs separator={<NavigateNextOutlined fontSize="small" />}>
                 <Link
                     component="button"
@@ -157,15 +157,15 @@ export const MessagesPage = () => {
             </Box>
 
             <TableContainer component={Paper} elevation={0} variant="outlined" sx={{ minHeight: 480, display: 'flex', flexDirection: 'column' }}>
-                <Box sx={{ flex: 1 }}>
-                    <Table>
+                <Box sx={{ flex: 1, overflowX: 'auto' }}>
+                    <Table sx={{ minWidth: 420 }}>
                         <TableHead>
                             <TableRow>
                                 <TableCell>Conteúdo</TableCell>
                                 <TableCell>Destinatários</TableCell>
                                 <TableCell>Status</TableCell>
-                                <TableCell>Agendado para</TableCell>
-                                <TableCell>Enviado em</TableCell>
+                                <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>Agendado para</TableCell>
+                                <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>Enviado em</TableCell>
                                 <TableCell align="right">Ações</TableCell>
                             </TableRow>
                         </TableHead>
@@ -175,8 +175,8 @@ export const MessagesPage = () => {
                                     <TableCell><Skeleton variant="text" width="70%" /></TableCell>
                                     <TableCell><Skeleton variant="text" width="55%" /></TableCell>
                                     <TableCell><Skeleton variant="rounded" width={80} height={24} /></TableCell>
-                                    <TableCell><Skeleton variant="text" width="50%" /></TableCell>
-                                    <TableCell><Skeleton variant="text" width="50%" /></TableCell>
+                                    <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}><Skeleton variant="text" width="50%" /></TableCell>
+                                    <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}><Skeleton variant="text" width="50%" /></TableCell>
                                     <TableCell align="right">
                                         <Skeleton variant="circular" width={28} height={28} sx={{ display: 'inline-block', mr: 0.5 }} />
                                         <Skeleton variant="circular" width={28} height={28} sx={{ display: 'inline-block' }} />
@@ -242,17 +242,17 @@ export const MessagesPage = () => {
                                             />
                                         )}
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
                                         <Typography variant="body2" color="text.secondary">
                                             {message.scheduledAt ? formatDate(message.scheduledAt, true) : '-'}
                                         </Typography>
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
                                         <Typography variant="body2" color="text.secondary">
                                             {message.sentAt ? formatDate(message.sentAt, true) : '-'}
                                         </Typography>
                                     </TableCell>
-                                    <TableCell align="right">
+                                    <TableCell align="right" sx={{ whiteSpace: 'nowrap' }}>
                                         <Tooltip title="Editar">
                                             <span>
                                                 <IconButton

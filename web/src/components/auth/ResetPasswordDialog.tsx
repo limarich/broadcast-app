@@ -74,7 +74,7 @@ export const ResetPasswordDialog = ({ open, onClose, initialEmail = '' }: ResetP
 
     return (
         <>
-            <Dialog open={open} onClose={handleClose} maxWidth="xs" fullWidth>
+            <Dialog open={open} onClose={handleClose} maxWidth="xs" fullWidth sx={{ '& .MuiDialog-paper': { maxHeight: '85vh', mx: { xs: 2, sm: 'auto' }, width: '100%' } }}>
                 <DialogTitle>Recuperar senha</DialogTitle>
                 <DialogContent>
                     <DialogContentText sx={{ mb: 2 }}>

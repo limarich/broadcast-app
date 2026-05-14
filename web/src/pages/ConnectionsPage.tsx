@@ -78,7 +78,7 @@ export const ConnectionsPage = () => {
     }
 
     return (
-        <Box className="p-8 flex flex-col gap-6">
+        <Box className="p-4 md:p-8 flex flex-col gap-6">
             <Box className="flex items-center justify-between">
                 <Box>
                     <Typography variant="h5" sx={{ fontWeight: 600 }}>Conexões</Typography>
@@ -95,12 +95,12 @@ export const ConnectionsPage = () => {
             </Box>
 
             <TableContainer component={Paper} elevation={0} variant="outlined" sx={{ minHeight: 480, display: 'flex', flexDirection: 'column' }}>
-                <Box sx={{ flex: 1 }}>
-                    <Table>
+                <Box sx={{ flex: 1, overflowX: 'auto' }}>
+                    <Table sx={{ minWidth: 480 }}>
                         <TableHead>
                             <TableRow>
                                 <TableCell>Nome</TableCell>
-                                <TableCell>Criado em</TableCell>
+                                <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>Criado em</TableCell>
                                 <TableCell align="right">Ações</TableCell>
                             </TableRow>
                         </TableHead>
@@ -108,7 +108,7 @@ export const ConnectionsPage = () => {
                             {loading && Array.from({ length: 4 }).map((_, i) => (
                                 <TableRow key={i}>
                                     <TableCell><Skeleton variant="text" width="60%" /></TableCell>
-                                    <TableCell><Skeleton variant="text" width="40%" /></TableCell>
+                                    <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}><Skeleton variant="text" width="40%" /></TableCell>
                                     <TableCell><Skeleton variant="rounded" width={80} height={28} /></TableCell>
                                     <TableCell align="right">
                                         <Skeleton variant="circular" width={28} height={28} sx={{ display: 'inline-block', mr: 0.5 }} />
@@ -148,12 +148,12 @@ export const ConnectionsPage = () => {
                                             </Tooltip>
                                         </Box>
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
                                         <Typography variant="body2" color="text.secondary">
                                             {formatDate(connection.createdAt)}
                                         </Typography>
                                     </TableCell>
-                                    <TableCell align="right">
+                                    <TableCell align="right" sx={{ whiteSpace: 'nowrap' }}>
                                         <Button
                                             size="small"
                                             variant="outlined"

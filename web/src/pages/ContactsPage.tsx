@@ -76,7 +76,7 @@ export const ContactsPage = () => {
     }
 
     return (
-        <Box className="p-8 flex flex-col gap-6">
+        <Box className="p-4 md:p-8 flex flex-col gap-6">
             <Breadcrumbs separator={<NavigateNextOutlined fontSize="small" />}>
                 <Link
                     component="button"
@@ -107,13 +107,13 @@ export const ContactsPage = () => {
             </Box>
 
             <TableContainer component={Paper} elevation={0} variant="outlined" sx={{ minHeight: 480, display: 'flex', flexDirection: 'column' }}>
-                <Box sx={{ flex: 1 }}>
-                    <Table>
+                <Box sx={{ flex: 1, overflowX: 'auto' }}>
+                    <Table sx={{ minWidth: 520 }}>
                         <TableHead>
                             <TableRow>
                                 <TableCell>Nome</TableCell>
                                 <TableCell>Telefone</TableCell>
-                                <TableCell>Criado em</TableCell>
+                                <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>Criado em</TableCell>
                                 <TableCell align="right">Ações</TableCell>
                             </TableRow>
                         </TableHead>
@@ -122,7 +122,7 @@ export const ContactsPage = () => {
                                 <TableRow key={i}>
                                     <TableCell><Skeleton variant="text" width="55%" /></TableCell>
                                     <TableCell><Skeleton variant="text" width="45%" /></TableCell>
-                                    <TableCell><Skeleton variant="text" width="35%" /></TableCell>
+                                    <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}><Skeleton variant="text" width="35%" /></TableCell>
                                     <TableCell align="right">
                                         <Skeleton variant="circular" width={28} height={28} sx={{ display: 'inline-block', mr: 0.5 }} />
                                         <Skeleton variant="circular" width={28} height={28} sx={{ display: 'inline-block' }} />
@@ -161,12 +161,12 @@ export const ContactsPage = () => {
                                             {formatPhoneNumber(contact.phone)}
                                         </Typography>
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
                                         <Typography variant="body2" color="text.secondary">
                                             {formatDate(contact.createdAt)}
                                         </Typography>
                                     </TableCell>
-                                    <TableCell align="right">
+                                    <TableCell align="right" sx={{ whiteSpace: 'nowrap' }}>
                                         <Tooltip title="Enviar mensagem">
                                             <IconButton
                                                 size="small"

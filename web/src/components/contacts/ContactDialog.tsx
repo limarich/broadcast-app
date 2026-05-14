@@ -6,7 +6,7 @@ import {
     DialogTitle,
     Button,
     TextField,
-    CircularProgress
+    CircularProgress,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
@@ -82,7 +82,7 @@ export const ContactDialog = ({ open, onClose, selectedContact, connectionId, on
     }
 
     return (
-        <Dialog open={open} onClose={onClose}>
+        <Dialog open={open} onClose={onClose} sx={{ '& .MuiDialog-paper': { maxHeight: '85vh', mx: { xs: 2, sm: 'auto' }, width: '100%' } }}>
             <DialogTitle> {selectedContact ? 'Editar' : 'Nova'} Contato </DialogTitle>
             <DialogContent>
                 <DialogContentText>

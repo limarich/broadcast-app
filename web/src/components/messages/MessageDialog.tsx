@@ -154,7 +154,7 @@ export const MessageDialog = ({ open, onClose, selectedMessage, preselectedConta
     const saveLabel = scheduleEnabled ? 'Agendar envio' : 'Enviar agora'
 
     return (
-        <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+        <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm" sx={{ '& .MuiDialog-paper': { maxHeight: '85vh', mx: { xs: 2, sm: 'auto' }, width: '100%' } }}>
             <DialogTitle>
                 <div className="flex flex-col gap-0.5">
                     <span>{selectedMessage ? 'Editar mensagem' : 'Nova mensagem'}</span>
