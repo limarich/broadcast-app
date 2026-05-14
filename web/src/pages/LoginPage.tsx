@@ -21,6 +21,7 @@ export const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false)
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
+    const [rememberMe, setRememberMe] = useState(false);
 
     const [resetOpen, setResetOpen] = useState(false)
     const [successOpen, setSuccessOpen] = useState(false)
@@ -30,7 +31,7 @@ export const LoginPage = () => {
         setError('')
         setLoading(true)
         try {
-            await login(email, password)
+            await login(email, password, rememberMe)
             navigate('/connections')
         } catch (e) {
             if (e instanceof FirebaseError) {
@@ -118,7 +119,7 @@ export const LoginPage = () => {
                 />
                 <Box className="flex items-center justify-between">
                     <FormControlLabel
-                        control={<Checkbox size="small" />}
+                        control={<Checkbox size="small" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} />}
                         label={<Typography variant="body2" color="text.secondary" component="span">Manter-me conectado</Typography>}
                     />
                     <MuiLink

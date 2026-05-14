@@ -1,10 +1,10 @@
-import { createUserWithEmailAndPassword, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, type User } from "firebase/auth";
+import { browserLocalPersistence, browserSessionPersistence, createUserWithEmailAndPassword, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, setPersistence, signInWithEmailAndPassword, signOut, type User } from "firebase/auth";
 import { createContext, useContext, useEffect, useState } from "react";
 import { auth } from "../lib/firebase";
 
 export interface AuthContextType {
     user: User | null;
-    login: (email: string, password: string) => Promise<void>;
+    login: (email: string, password: string, remember: boolean) => Promise<void>;
     register: (email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
     resetPassword: (email: string) => Promise<void>;
@@ -17,9 +17,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
-    const login = async (email: string, password: string) => {
-        await signInWithEmailAndPassword(auth, email, password);
-    };
+    const login = async (email: string, password: string, remember: boolean) => {
+        await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence)
+        await signInWithEmailAndPassword(auth, email, password)
+    }
 
     const register = async (email: string, password: string) => {
         const { user } = await createUserWithEmailAndPassword(auth, email, password);
