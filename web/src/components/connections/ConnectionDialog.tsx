@@ -24,17 +24,32 @@ interface ConnectionDialogProps {
 export const ConnectionDialog = ({ open, onClose, selectedConnection, onSuccess, onError }: ConnectionDialogProps) => {
     const [name, setName] = useState('');
     const [submitting, setSubmitting] = useState(false)
+    const [errors, setErrors] = useState<Record<string, string>>({})
 
     const { user } = useAuth()
 
     useEffect(() => {
         if (open) {
             setName(selectedConnection?.name ?? '')
+            setErrors({})
         }
     }, [open, selectedConnection])
 
+    const validate = () => {
+        const next: Record<string, string> = {}
+        if (!name.trim()) {
+            next.name = 'Nome é obrigatório'
+        } else if (name.trim().length < 2) {
+            next.name = 'Nome deve ter pelo menos 2 caracteres'
+        } else if (name.trim().length > 50) {
+            next.name = 'Nome deve ter no máximo 50 caracteres'
+        }
+        setErrors(next)
+        return Object.keys(next).length === 0
+    }
+
     const handleSave = async () => {
-        if (!user) return;
+        if (!user || !validate()) return;
         setSubmitting(true)
         try {
             if (selectedConnection) {
@@ -66,7 +81,12 @@ export const ConnectionDialog = ({ open, onClose, selectedConnection, onSuccess,
                     fullWidth
                     margin="normal"
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={(e) => {
+                        setName(e.target.value)
+                        setErrors(prev => ({ ...prev, name: '' }))
+                    }}
+                    error={!!errors.name}
+                    helperText={errors.name}
                 />
             </DialogContent>
             <DialogActions>
@@ -75,7 +95,7 @@ export const ConnectionDialog = ({ open, onClose, selectedConnection, onSuccess,
                 </Button>
                 <Button
                     onClick={handleSave}
-                    disabled={!name || submitting}
+                    disabled={submitting}
                     variant="contained"
                 >
                     {submitting ? <CircularProgress size={20} /> : 'Salvar'}
@@ -83,4 +103,4 @@ export const ConnectionDialog = ({ open, onClose, selectedConnection, onSuccess,
             </DialogActions>
         </Dialog>
     )
-} 
+}

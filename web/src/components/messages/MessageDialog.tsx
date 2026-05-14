@@ -12,10 +12,8 @@ import {
     Typography,
     Box,
     Divider,
-    IconButton,
-    Tooltip,
+    Switch,
 } from "@mui/material";
-import { Clear } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { addMessage, updateMessage } from "../../services/messageService";
 import { useAuth } from "../../contexts/AuthContext";
@@ -38,21 +36,15 @@ export const MessageDialog = ({ open, onClose, selectedMessage, preselectedConta
     const [content, setContent] = useState('')
     const [selectedContactIds, setSelectedContactIds] = useState<string[]>([])
     const [scheduledAt, setScheduledAt] = useState('')
+    const [scheduleEnabled, setScheduleEnabled] = useState(false)
     const [submitting, setSubmitting] = useState(false)
-
-    const [dateKey, setDateKey] = useState(0)
-    const [isDateFocused, setIsDateFocused] = useState(false)
-
-    const handleClearDate = () => {
-        setScheduledAt('')
-        setDateKey((prev) => prev + 1)
-        setIsDateFocused(false)
-    }
+    const [errors, setErrors] = useState<Record<string, string>>({})
 
     useEffect(() => {
         if (open) {
             setContent(selectedMessage?.content ?? '')
-            
+            setErrors({})
+
             if (selectedMessage) {
                 setSelectedContactIds(selectedMessage.contactIds ?? [])
             } else if (preselectedContactId) {
@@ -60,13 +52,17 @@ export const MessageDialog = ({ open, onClose, selectedMessage, preselectedConta
             } else {
                 setSelectedContactIds([])
             }
+
             if (selectedMessage?.scheduledAt) {
                 const date = typeof (selectedMessage.scheduledAt as any).toDate === 'function'
                     ? (selectedMessage.scheduledAt as any).toDate()
                     : new Date(selectedMessage.scheduledAt as any)
-                setScheduledAt(date.toISOString().slice(0, 16))
+                const iso = date.toISOString().slice(0, 16)
+                setScheduledAt(iso)
+                setScheduleEnabled(true)
             } else {
                 setScheduledAt('')
+                setScheduleEnabled(false)
             }
         }
     }, [open, selectedMessage, preselectedContactId])
@@ -79,11 +75,53 @@ export const MessageDialog = ({ open, onClose, selectedMessage, preselectedConta
         )
     }
 
+    const defaultScheduledAt = () => {
+        const d = new Date()
+        d.setHours(d.getHours() + 1, 0, 0, 0)
+        return d.toISOString().slice(0, 16)
+    }
+
+    const handleToggleSchedule = (enabled: boolean) => {
+        setScheduleEnabled(enabled)
+        if (enabled) {
+            setScheduledAt(defaultScheduledAt())
+        } else {
+            setScheduledAt('')
+        }
+    }
+
+    const validate = () => {
+        const next: Record<string, string> = {}
+
+        if (!content.trim()) {
+            next.content = 'Conteúdo é obrigatório'
+        } else if (content.trim().length < 5) {
+            next.content = 'Conteúdo deve ter pelo menos 5 caracteres'
+        } else if (content.trim().length > 1000) {
+            next.content = 'Conteúdo deve ter no máximo 1000 caracteres'
+        }
+
+        if (selectedContactIds.length === 0) {
+            next.contacts = 'Selecione pelo menos um destinatário'
+        }
+
+        if (scheduleEnabled) {
+            if (!scheduledAt) {
+                next.scheduledAt = 'Informe a data e hora do agendamento'
+            } else if (new Date(scheduledAt) <= new Date()) {
+                next.scheduledAt = 'A data de agendamento deve ser no futuro'
+            }
+        }
+
+        setErrors(next)
+        return Object.keys(next).length === 0
+    }
+
     const handleSave = async () => {
-        if (!user) return
+        if (!user || !validate()) return
         setSubmitting(true)
         try {
-            const parsedScheduledAt = scheduledAt ? new Date(scheduledAt) : undefined
+            const parsedScheduledAt = scheduleEnabled && scheduledAt ? new Date(scheduledAt) : undefined
 
             if (selectedMessage) {
                 await updateMessage({
@@ -112,15 +150,23 @@ export const MessageDialog = ({ open, onClose, selectedMessage, preselectedConta
         }
     }
 
-    const isValid = content.trim().length > 0 && selectedContactIds.length > 0
+    const saveLabel = scheduleEnabled ? 'Agendar envio' : 'Enviar agora'
 
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
             <DialogTitle>
-                {selectedMessage ? 'Editar mensagem' : 'Nova mensagem'}
+                <div className="flex flex-col gap-0.5">
+                    <span>{selectedMessage ? 'Editar mensagem' : 'Nova mensagem'}</span>
+                    <Typography variant="body2" color="text.secondary">
+                        {selectedMessage
+                            ? 'Edite o conteúdo ou os destinatários da mensagem'
+                            : 'Selecione os destinatários e escreva sua mensagem'}
+                    </Typography>
+                </div>
             </DialogTitle>
+
             <DialogContent>
-                <Box className="flex flex-col gap-4 pt-2">
+                <div className="flex flex-col gap-4 pt-2">
                     <TextField
                         required
                         label="Conteúdo da mensagem"
@@ -129,88 +175,125 @@ export const MessageDialog = ({ open, onClose, selectedMessage, preselectedConta
                         multiline
                         rows={4}
                         value={content}
-                        onChange={(e) => setContent(e.target.value)}
+                        onChange={(e) => {
+                            setContent(e.target.value)
+                            setErrors(prev => ({ ...prev, content: '' }))
+                        }}
+                        error={!!errors.content}
+                        helperText={errors.content || `${content.length}/1000 caracteres`}
+                        slotProps={{ htmlInput: { maxLength: 1000 } }}
                     />
 
-                    <Box>
-                        <Typography variant="subtitle2" gutterBottom>
-                            Destinatários
+                    <div className="flex flex-col gap-2">
+                        <Typography variant="subtitle2">
+                            Destinatários{selectedContactIds.length > 0 && (
+                                <Typography component="span" variant="caption" color="primary" sx={{ ml: 1 }}>
+                                    ({selectedContactIds.length} selecionado{selectedContactIds.length !== 1 ? 's' : ''})
+                                </Typography>
+                            )}
                         </Typography>
+
+                        {errors.contacts && (
+                            <Typography variant="caption" color="error">
+                                {errors.contacts}
+                            </Typography>
+                        )}
+
                         {contacts.length === 0 ? (
                             <Typography variant="body2" color="text.secondary">
                                 Nenhum contato disponível nessa conexão.
                             </Typography>
                         ) : (
-                            <FormGroup>
-                                {contacts.map((contact) => (
-                                    <FormControlLabel
-                                        key={contact.id}
-                                        control={
-                                            <Checkbox
-                                                size="small"
-                                                checked={selectedContactIds.includes(contact.id)}
-                                                onChange={() => handleToggleContact(contact.id)}
-                                            />
-                                        }
-                                        label={
-                                            <Typography variant="body2">
-                                                {contact.name}{' '}
-                                                <Typography component="span" variant="caption" color="text.secondary">
-                                                    {contact.phone}
+                            <Box
+                                sx={{
+                                    border: '1px solid',
+                                    borderColor: 'divider',
+                                    borderRadius: 2,
+                                    maxHeight: 200,
+                                    overflowY: 'auto',
+                                    px: 1.5,
+                                    py: 0.5,
+                                }}
+                            >
+                                <FormGroup>
+                                    {contacts.map((contact) => (
+                                        <FormControlLabel
+                                            key={contact.id}
+                                            control={
+                                                <Checkbox
+                                                    size="small"
+                                                    checked={selectedContactIds.includes(contact.id)}
+                                                    onChange={() => {
+                                                        handleToggleContact(contact.id)
+                                                        setErrors(prev => ({ ...prev, contacts: '' }))
+                                                    }}
+                                                />
+                                            }
+                                            label={
+                                                <Typography variant="body2">
+                                                    {contact.name}{' '}
+                                                    <Typography component="span" variant="caption" color="text.secondary">
+                                                        {contact.phone}
+                                                    </Typography>
                                                 </Typography>
-                                            </Typography>
-                                        }
-                                    />
-                                ))}
-                            </FormGroup>
+                                            }
+                                        />
+                                    ))}
+                                </FormGroup>
+                            </Box>
                         )}
-                    </Box>
+                    </div>
 
                     <Divider />
 
-                    <Box>
-                        <Typography variant="subtitle2" gutterBottom>
-                            Agendamento (opcional)
-                        </Typography>
-                        <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-start' }}>
+                    <div className="flex flex-col gap-3">
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={scheduleEnabled}
+                                    onChange={(e) => handleToggleSchedule(e.target.checked)}
+                                    size="small"
+                                />
+                            }
+                            label={
+                                <Typography variant="subtitle2">
+                                    Agendar envio
+                                </Typography>
+                            }
+                        />
+
+                        {scheduleEnabled && (
                             <TextField
-                                key={dateKey}
-                                type={scheduledAt || isDateFocused ? "datetime-local" : "text"}
+                                label="Data e hora do envio"
+                                type="datetime-local"
                                 fullWidth
                                 value={scheduledAt}
-                                onChange={(e) => setScheduledAt(e.target.value)}
-                                onFocus={() => setIsDateFocused(true)}
-                                onBlur={() => setIsDateFocused(false)}
-                                placeholder="Clique para agendar (opcional)"
-                                slotProps={{
-                                    inputLabel: { shrink: (scheduledAt || isDateFocused) ? true : undefined },
-                                    htmlInput: (scheduledAt || isDateFocused) ? { min: new Date().toISOString().slice(0, 16) } : {}
+                                onChange={(e) => {
+                                    setScheduledAt(e.target.value)
+                                    setErrors(prev => ({ ...prev, scheduledAt: '' }))
                                 }}
-                                helperText="Deixe em branco para enviar imediatamente"
+                                error={!!errors.scheduledAt}
+                                slotProps={{
+                                    inputLabel: { shrink: true },
+                                    htmlInput: { min: new Date().toISOString().slice(0, 16) },
+                                }}
+                                helperText={errors.scheduledAt || 'A mensagem será enviada automaticamente nesse horário'}
                             />
-                            <Tooltip title="Limpar agendamento">
-                                <IconButton
-                                    color="error"
-                                    onClick={handleClearDate}
-                                    sx={{ mt: 0.5 }}
-                                >
-                                    <Clear />
-                                </IconButton>
-                            </Tooltip>
-                        </Box>
-                    </Box>
-                </Box>
+                        )}
+                    </div>
+                </div>
             </DialogContent>
+
             <DialogActions>
                 <Button onClick={onClose} disabled={submitting}>
                     Cancelar
                 </Button>
                 <Button
                     onClick={handleSave}
-                    disabled={!isValid || submitting}
+                    disabled={submitting}
                     variant="contained"
                 >
-                    {submitting ? <CircularProgress size={20} /> : 'Salvar'}
+                    {submitting ? <CircularProgress size={20} /> : saveLabel}
                 </Button>
             </DialogActions>
         </Dialog>

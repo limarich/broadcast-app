@@ -23,10 +23,13 @@ interface ContactDialogProps {
     onError?: (message: string) => void;
 }
 
+const PHONE_REGEX = /^\+?[\d\s\-()\[\]]{8,20}$/
+
 export const ContactDialog = ({ open, onClose, selectedContact, connectionId, onSuccess, onError }: ContactDialogProps) => {
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [submitting, setSubmitting] = useState(false)
+    const [errors, setErrors] = useState<Record<string, string>>({})
 
     const { user } = useAuth()
 
@@ -34,11 +37,33 @@ export const ContactDialog = ({ open, onClose, selectedContact, connectionId, on
         if (open) {
             setName(selectedContact?.name ?? '')
             setPhone(formatPhoneNumber(selectedContact?.phone ?? ''))
+            setErrors({})
         }
     }, [open, selectedContact])
 
+    const validate = () => {
+        const next: Record<string, string> = {}
+
+        if (!name.trim()) {
+            next.name = 'Nome é obrigatório'
+        } else if (name.trim().length < 2) {
+            next.name = 'Nome deve ter pelo menos 2 caracteres'
+        } else if (name.trim().length > 50) {
+            next.name = 'Nome deve ter no máximo 50 caracteres'
+        }
+
+        if (!phone.trim()) {
+            next.phone = 'Telefone é obrigatório'
+        } else if (!PHONE_REGEX.test(phone.trim())) {
+            next.phone = 'Telefone inválido. Use o formato: (99) 99999-9999'
+        }
+
+        setErrors(next)
+        return Object.keys(next).length === 0
+    }
+
     const handleSave = async () => {
-        if (!user) return;
+        if (!user || !validate()) return;
         setSubmitting(true)
         try {
             if (selectedContact) {
@@ -70,7 +95,12 @@ export const ContactDialog = ({ open, onClose, selectedContact, connectionId, on
                     fullWidth
                     margin="normal"
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={(e) => {
+                        setName(e.target.value)
+                        setErrors(prev => ({ ...prev, name: '' }))
+                    }}
+                    error={!!errors.name}
+                    helperText={errors.name}
                 />
                 <TextField
                     required
@@ -79,7 +109,12 @@ export const ContactDialog = ({ open, onClose, selectedContact, connectionId, on
                     fullWidth
                     margin="normal"
                     value={phone}
-                    onChange={(e) => setPhone(formatPhoneNumber(e.target.value))}
+                    onChange={(e) => {
+                        setPhone(formatPhoneNumber(e.target.value))
+                        setErrors(prev => ({ ...prev, phone: '' }))
+                    }}
+                    error={!!errors.phone}
+                    helperText={errors.phone}
                 />
             </DialogContent>
             <DialogActions>
@@ -88,7 +123,7 @@ export const ContactDialog = ({ open, onClose, selectedContact, connectionId, on
                 </Button>
                 <Button
                     onClick={handleSave}
-                    disabled={!name || submitting}
+                    disabled={submitting}
                     variant="contained"
                 >
                     {submitting ? <CircularProgress size={20} /> : 'Salvar'}
@@ -96,4 +131,4 @@ export const ContactDialog = ({ open, onClose, selectedContact, connectionId, on
             </DialogActions>
         </Dialog>
     )
-} 
+}
