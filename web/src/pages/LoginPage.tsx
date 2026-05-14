@@ -1,21 +1,29 @@
-import { Alert, Box, Button, Checkbox, CircularProgress, FormControlLabel, IconButton, InputAdornment, Link as MuiLink, Stack, TextField, Typography } from "@mui/material"
+import {
+    Alert, Box, Button, Checkbox, CircularProgress, FormControlLabel,
+    IconButton, InputAdornment, Link as MuiLink, Snackbar, Stack,
+    TextField, Typography
+} from "@mui/material"
 import { useEffect, useState } from "react"
 import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "../contexts/AuthContext"
 import { VisibilityOff, Visibility, EmailOutlined, LockOutlined } from "@mui/icons-material"
 import { FirebaseError } from "firebase/app"
+import { ResetPasswordDialog } from "../components/auth/ResetPasswordDialog"
 
 export const LoginPage = () => {
     const { login } = useAuth()
     const navigate = useNavigate()
     const location = useLocation();
-    const { email: prefilledEmail } = location.state || {};
+    const { email: prefilledEmail = '' } = location.state || {};
 
-    const [email, setEmail] = useState(prefilledEmail || '')
+    const [email, setEmail] = useState(prefilledEmail)
     const [password, setPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
+
+    const [resetOpen, setResetOpen] = useState(false)
+    const [successOpen, setSuccessOpen] = useState(false)
 
     const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -41,6 +49,10 @@ export const LoginPage = () => {
         finally {
             setLoading(false)
         }
+    }
+
+    const handleOpenReset = () => {
+        setResetOpen(true)
     }
 
     useEffect(() => {
@@ -104,10 +116,21 @@ export const LoginPage = () => {
                         }
                     }}
                 />
-                <FormControlLabel
-                    control={<Checkbox size="small" />}
-                    label={<Typography variant="body2" color="text.secondary" component="span">Manter-me conectado</Typography>}
-                />
+                <Box className="flex items-center justify-between">
+                    <FormControlLabel
+                        control={<Checkbox size="small" />}
+                        label={<Typography variant="body2" color="text.secondary" component="span">Manter-me conectado</Typography>}
+                    />
+                    <MuiLink
+                        component="button"
+                        type="button"
+                        variant="body2"
+                        onClick={handleOpenReset}
+                        sx={{ fontWeight: 500 }}
+                    >
+                        Esqueci minha senha
+                    </MuiLink>
+                </Box>
                 <Button
                     type="submit"
                     variant="contained"
@@ -123,6 +146,28 @@ export const LoginPage = () => {
                 Não tem uma conta?{' '}
                 <MuiLink component={RouterLink} to="/register" sx={{ fontWeight: 500 }}>Criar conta</MuiLink>
             </Typography>
+
+            <ResetPasswordDialog
+                open={resetOpen}
+                onClose={() => setResetOpen(false)}
+                initialEmail={email}
+            />
+
+            <Snackbar
+                open={successOpen}
+                autoHideDuration={6000}
+                onClose={() => setSuccessOpen(false)}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+                <Alert
+                    onClose={() => setSuccessOpen(false)}
+                    severity="success"
+                    variant="filled"
+                    sx={{ width: '100%', boxShadow: 4 }}
+                >
+                    E-mail de recuperação enviado! Verifique sua caixa de entrada.
+                </Alert>
+            </Snackbar>
         </Box>
     )
 }
