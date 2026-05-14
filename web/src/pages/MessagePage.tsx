@@ -245,6 +245,7 @@ export const MessagesPage = () => {
                                                 size="small"
                                                 color="warning"
                                                 variant="outlined"
+                                                style={{ padding: '0 4px' }}
                                             />
                                         ) : (
                                             <Chip
@@ -253,6 +254,7 @@ export const MessagesPage = () => {
                                                 size="small"
                                                 color="success"
                                                 variant="outlined"
+                                                style={{ padding: '0 4px' }}
                                             />
                                         )}
                                     </TableCell>
