@@ -13,8 +13,11 @@ import {
     Box,
     Divider,
     Switch,
+    Stack,
 } from "@mui/material";
+import { PersonAddOutlined } from "@mui/icons-material";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { addMessage, updateMessage } from "../../services/messageService";
 import { useAuth } from "../../contexts/AuthContext";
 import type { Contact, Message } from "../../types";
@@ -33,6 +36,7 @@ interface MessageDialogProps {
 
 export const MessageDialog = ({ open, onClose, selectedMessage, preselectedContactId, connectionId, contacts, onSuccess, onError }: MessageDialogProps) => {
     const { user } = useAuth()
+    const navigate = useNavigate()
 
     const [content, setContent] = useState('')
     const [selectedContactIds, setSelectedContactIds] = useState<string[]>([])
@@ -201,9 +205,23 @@ export const MessageDialog = ({ open, onClose, selectedMessage, preselectedConta
                         )}
 
                         {contacts.length === 0 ? (
-                            <Typography variant="body2" color="text.secondary">
-                                Nenhum contato disponível nessa conexão.
-                            </Typography>
+                            <Stack direction="row"
+                                sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2, px: 2, py: 1.5, alignItems: 'center', justifyContent: 'space-between' }}
+                            >
+                                <Typography variant="body2" color="text.secondary">
+                                    Nenhum contato disponível nessa conexão.
+                                </Typography>
+                                <Button
+                                    size="small"
+                                    startIcon={<PersonAddOutlined fontSize="small" />}
+                                    onClick={() => {
+                                        onClose()
+                                        navigate(`/connections/${connectionId}/contacts`)
+                                    }}
+                                >
+                                    Adicionar
+                                </Button>
+                            </Stack>
                         ) : (
                             <Box
                                 sx={{
