@@ -30,6 +30,7 @@ import { deleteMessage } from '../services/messageService'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import type { Message } from '../types'
 import { MessageDialog } from '../components/messages/MessageDialog'
+import { MessageDetailDialog } from '../components/messages/MessageDetailDialog'
 import { useToast } from '../hooks/useToast'
 import { Toast } from '../components/Toast'
 import { formatDate, truncateText } from '../utils/format'
@@ -55,7 +56,13 @@ export const MessagesPage = () => {
     const [selectedMessage, setSelectedMessage] = useState<Message | null>(null)
     const [preselectedContactId, setPreselectedContactId] = useState<string | null>(null)
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
+    const [detailDialogOpen, setDetailDialogOpen] = useState(false)
     const [deleting, setDeleting] = useState(false)
+
+    const handleViewMessage = (message: Message) => {
+        setSelectedMessage(message)
+        setDetailDialogOpen(true)
+    }
 
     const handleEditMessage = (message: Message) => {
         setSelectedMessage(message)
@@ -201,7 +208,7 @@ export const MessagesPage = () => {
                                 </TableRow>
                             )}
                             {!loading && paginatedMessages.map((message) => (
-                                <TableRow key={message.id} hover>
+                                <TableRow key={message.id} hover onClick={() => handleViewMessage(message)} sx={{ cursor: 'pointer' }}>
                                     <TableCell sx={{ maxWidth: 220 }}>
                                         <Tooltip title={message.content.length > 60 ? message.content : ''}>
                                             <Typography variant="body2" sx={{ fontWeight: 500 }}>
@@ -268,7 +275,7 @@ export const MessagesPage = () => {
                                             {message.sentAt ? formatDate(message.sentAt, true) : '-'}
                                         </Typography>
                                     </TableCell>
-                                    <TableCell align="right" sx={{ whiteSpace: 'nowrap' }}>
+                                    <TableCell align="right" sx={{ whiteSpace: 'nowrap' }} onClick={(e) => e.stopPropagation()}>
                                         <Tooltip title="Editar">
                                             <span>
                                                 <IconButton
@@ -324,6 +331,16 @@ export const MessagesPage = () => {
                 contacts={contacts}
                 onSuccess={(msg) => showToast(msg)}
                 onError={(msg) => showToast(msg, 'error')}
+            />
+
+            <MessageDetailDialog
+                open={detailDialogOpen}
+                onClose={() => {
+                    setDetailDialogOpen(false)
+                    setSelectedMessage(null)
+                }}
+                message={selectedMessage}
+                contacts={contacts}
             />
 
             <ConfirmDialog
