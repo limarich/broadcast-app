@@ -23,7 +23,8 @@ interface ContactDialogProps {
     onError?: (message: string) => void;
 }
 
-const PHONE_REGEX = /^\+?[\d\s\-()\[\]]{8,20}$/
+const PHONE_FORMAT_REGEX = /^\+?[\d\s\-()\[\]]+$/
+const countDigits = (value: string) => (value.match(/\d/g) ?? []).length
 
 export const ContactDialog = ({ open, onClose, selectedContact, connectionId, onSuccess, onError }: ContactDialogProps) => {
     const [name, setName] = useState('');
@@ -54,8 +55,12 @@ export const ContactDialog = ({ open, onClose, selectedContact, connectionId, on
 
         if (!phone.trim()) {
             next.phone = 'Telefone é obrigatório'
-        } else if (!PHONE_REGEX.test(phone.trim())) {
+        } else if (!PHONE_FORMAT_REGEX.test(phone.trim())) {
             next.phone = 'Telefone inválido. Use o formato: (99) 99999-9999'
+        } else if (countDigits(phone) < 10) {
+            next.phone = 'Telefone deve ter pelo menos 10 dígitos'
+        } else if (countDigits(phone) > 15) {
+            next.phone = 'Telefone deve ter no máximo 15 dígitos'
         }
 
         setErrors(next)

@@ -89,10 +89,9 @@ export const MessagesPage = () => {
 
     const paginatedMessages = filteredMessages.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 
-    const getContactNames = (contactIds: string[]) => {
-        return contactIds
-            .map((id) => contacts.find((c) => c.id === id)?.name ?? id)
-            .join(', ')
+    const resolveContactNames = (contactIds: string[]) => {
+        if (contactIds.length === 0) return null
+        return contactIds.map((id) => contacts.find((c) => c.id === id)?.name ?? null)
     }
 
     useEffect(() => { setPage(0) }, [filter])
@@ -211,17 +210,32 @@ export const MessagesPage = () => {
                                         </Tooltip>
                                     </TableCell>
                                     <TableCell sx={{ maxWidth: 180 }}>
-                                        <Typography
-                                            variant="body2"
-                                            color="text.secondary"
-                                            sx={{
-                                                overflow: 'hidden',
-                                                textOverflow: 'ellipsis',
-                                                whiteSpace: 'nowrap',
-                                            }}
-                                        >
-                                            {getContactNames(message.contactIds)}
-                                        </Typography>
+                                        {(() => {
+                                            const names = resolveContactNames(message.contactIds)
+                                            if (!names) return (
+                                                <Typography variant="body2" color="text.disabled" sx={{ fontStyle: 'italic' }}>
+                                                    Sem destinatários
+                                                </Typography>
+                                            )
+                                            return (
+                                                <Typography
+                                                    variant="body2"
+                                                    color="text.secondary"
+                                                    sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                                                >
+                                                    {names.map((name, i) => (
+                                                        <span key={i}>
+                                                            {i > 0 && ', '}
+                                                            {name ?? (
+                                                                <Typography component="span" variant="body2" color="text.disabled" sx={{ fontStyle: 'italic' }}>
+                                                                    Contato removido
+                                                                </Typography>
+                                                            )}
+                                                        </span>
+                                                    ))}
+                                                </Typography>
+                                            )
+                                        })()}
                                     </TableCell>
                                     <TableCell>
                                         {message.status === 'SCHEDULED' ? (
